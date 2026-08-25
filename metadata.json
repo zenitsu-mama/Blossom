@@ -1,0 +1,6 @@
+{
+  "name": "Blossoms 2026",
+  "description": "Official Blossoms inter-collegiate cultural festival platform featuring event discovery, categorized bento showcases, and registration backend.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,26 @@
+{
+  "entities": {
+    "Registration": {
+      "title": "Registration",
+      "description": "An event registration",
+      "type": "object",
+      "properties": {
+        "event_id": { "type": "string", "maxLength": 128 },
+        "user_id": { "type": "string", "maxLength": 128 },
+        "full_name": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 150 },
+        "phone": { "type": "string", "maxLength": 20 },
+        "institute": { "type": "string", "maxLength": 150 },
+        "team_members": { "type": "array" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["event_id", "user_id", "full_name", "email", "phone", "institute", "createdAt"]
+    }
+  },
+  "firestore": {
+    "registrations/{registrationId}": {
+      "schema": "Registration",
+      "description": "Store all registrations here"
+    }
+  }
+}

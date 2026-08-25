@@ -1,0 +1,42 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Helpers
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isSignedIn() { return request.auth != null; }
+    
+    function isValidRegistration(data) {
+      return data.keys().hasAll(['event_id', 'user_id', 'full_name', 'email', 'phone', 'institute', 'createdAt']) &&
+             (data.keys().size() == 7 || (data.keys().hasAll(['team_members']) && data.keys().size() == 8)) &&
+             data.event_id is string && data.event_id.size() <= 128 &&
+             data.user_id is string && data.user_id == request.auth.uid &&
+             data.full_name is string && data.full_name.size() <= 100 &&
+             data.email is string && data.email.size() <= 150 &&
+             data.phone is string && data.phone.size() <= 20 &&
+             data.institute is string && data.institute.size() <= 150 &&
+             (!('team_members' in data) || (data.team_members is list && data.team_members.size() <= 15)) &&
+             data.createdAt == request.time;
+    }
+
+    match /registrations/{registrationId} {
+      allow get: if isSignedIn() && existing().user_id == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.user_id == request.auth.uid;
+      allow create: if isSignedIn() &&
+                    request.auth.token.email_verified == true &&
+                    isValidId(registrationId) &&
+                    isValidRegistration(incoming());
+      allow update, delete: if false;
+    }
+  }
+}
