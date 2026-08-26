@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import bloomVideo from '../assets/blossoms-bloom.mp4';
 
 function FlowerBloomHero() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -57,7 +56,6 @@ function FlowerBloomHero() {
           style={{ transform: 'translateZ(0)' }}
         >
           <source src="/blossoms-bloom.mp4" type="video/mp4" />
-          <source src={bloomVideo} type="video/mp4" />
         </video>
       </div>
 
@@ -90,7 +88,7 @@ function FlowerBloomHero() {
         <div className={`transition-all duration-1000 ease-out ${animationPhase >= 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <Link 
             to="/account" 
-            className="inline-block bg-[#ef9797] rounded-[33px] border-[2px] border-black text-black px-12 pb-4 pt-[17px] mt-[2px] mr-0 -mb-[20px] text-xs font-bold uppercase tracking-[0.2em] shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] hover:bg-[#f85c5c] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all duration-200"
+            className="inline-block bg-[#c33a3a] rounded-[33px] border-[2px] border-black text-white px-12 pb-4 pt-[17px] mt-[2px] mr-0 -mb-[20px] text-xs font-bold uppercase tracking-[0.2em] shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] hover:bg-[#a82e2e] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all duration-200"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
             Login / Sign Up

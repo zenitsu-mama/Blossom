@@ -50,7 +50,7 @@ export default function Register() {
   if (eventError || !event) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center px-6 py-20 text-center max-w-lg mx-auto">
-        <AlertCircle className="w-12 h-12 text-[#ef9797] mb-6 stroke-[1.5]" />
+        <AlertCircle className="w-12 h-12 text-[#F87A71] mb-6 stroke-[1.5]" />
         <h2 className="text-3xl font-normal uppercase font-['Barlow_Condensed'] text-[#242323] mb-2 tracking-wide">
           Event Not Found
         </h2>
@@ -87,7 +87,7 @@ export default function Register() {
 
           {/* Main Title */}
           <div className="mb-8">
-            <span className="text-[10px] font-bold tracking-[0.2em] text-[#ef9797] uppercase font-['Inter'] block mb-1">
+            <span className="text-[10px] font-bold tracking-[0.2em] text-[#F87A71] uppercase font-['Inter'] block mb-1">
               {event.category} • {event.type === 'group' ? 'Group Event' : 'Solo Event'}
             </span>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-normal text-[#242323] font-['Barlow_Condensed'] uppercase tracking-tight leading-[0.95] mb-4">
@@ -163,7 +163,7 @@ export default function Register() {
             </Link>
             <button
               onClick={resetForm}
-              className="text-center bg-[#ef9797] border border-[#242323] text-[#242323] px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#f85c5c] transition-colors font-['Inter']"
+              className="text-center bg-[#c33a3a] border border-[#242323] text-white px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#a82e2e] transition-colors font-['Inter']"
             >
               Register Another Entry
             </button>
@@ -200,7 +200,7 @@ export default function Register() {
             </Link>
             <button
               onClick={retrySubmission}
-              className="w-full sm:w-auto bg-[#ef9797] border border-[#242323] text-[#242323] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#f85c5c] transition-colors font-['Inter']"
+              className="w-full sm:w-auto bg-[#c33a3a] border border-[#242323] text-white px-8 py-3.5 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#a82e2e] transition-colors font-['Inter']"
             >
               Change Email / Edit
             </button>
@@ -217,7 +217,7 @@ export default function Register() {
       <div className="flex items-center justify-between mb-8 md:mb-12">
         <Link
           to={`/events/${event.id}`}
-          className="inline-flex items-center gap-2 text-[10px] md:text-xs font-bold tracking-[0.2em] text-gray-500 hover:text-[#ef9797] uppercase font-['Inter'] transition-colors"
+          className="inline-flex items-center gap-2 text-[10px] md:text-xs font-bold tracking-[0.2em] text-gray-500 hover:text-[#F87A71] uppercase font-['Inter'] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Event Overview
         </Link>
@@ -234,7 +234,7 @@ export default function Register() {
         <div className="lg:col-span-5 flex flex-col gap-6 lg:sticky lg:top-24">
           <div className="bg-[#FAF7F2] border border-[#242323] p-6 md:p-8 relative">
             <div className="flex items-center justify-between border-b border-[#242323] pb-3 mb-6">
-              <span className="text-[10px] font-bold tracking-[0.25em] text-[#ef9797] uppercase font-['Inter']">
+              <span className="text-[10px] font-bold tracking-[0.25em] text-[#F87A71] uppercase font-['Inter']">
                 {event.category}
               </span>
               <span className="text-[10px] font-mono tracking-widest text-gray-500 uppercase">
@@ -286,7 +286,7 @@ export default function Register() {
                 <ul className="flex flex-col gap-2">
                   {event.rules.slice(0, 4).map((rule, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-xs font-['Inter'] text-gray-600 leading-snug">
-                      <span className="text-[#ef9797] font-bold select-none">—</span>
+                      <span className="text-[#F87A71] font-bold select-none">—</span>
                       <span>{rule}</span>
                     </li>
                   ))}
@@ -312,8 +312,8 @@ export default function Register() {
 
             {/* Server / Network Error Alert Banner */}
             {serverError && (
-              <div className="mb-8 p-4 bg-red-50 border border-[#ef9797] flex items-start gap-3 text-[#242323]">
-                <AlertCircle className="w-5 h-5 text-[#ef9797] shrink-0 mt-0.5" />
+              <div className="mb-8 p-4 bg-red-50 border border-[#F87A71] flex items-start gap-3 text-[#242323]">
+                <AlertCircle className="w-5 h-5 text-[#F87A71] shrink-0 mt-0.5" />
                 <div className="flex-1 text-xs font-['Inter']">
                   <p className="font-bold uppercase tracking-wider mb-1">Submission Interrupted</p>
                   <p className="text-gray-700">{serverError}</p>
@@ -321,7 +321,7 @@ export default function Register() {
                 {state === 'ERROR' && (
                   <button
                     onClick={retrySubmission}
-                    className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#242323] hover:text-[#ef9797] border-b border-[#242323]"
+                    className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#242323] hover:text-[#F87A71] border-b border-[#242323]"
                   >
                     <RefreshCw className="w-3 h-3" /> Retry
                   </button>
@@ -334,10 +334,10 @@ export default function Register() {
               <div className="flex flex-col">
                 <div className="flex items-center justify-between mb-2">
                   <label htmlFor="reg-fullname" className="text-xs font-bold uppercase tracking-[0.18em] text-[#242323] font-['Inter']">
-                    Full Name <span className="text-[#ef9797]">*</span>
+                    Full Name <span className="text-[#F87A71]">*</span>
                   </label>
                   {touched.fullName && errors.fullName && (
-                    <span className="text-[11px] font-semibold text-[#ef9797] uppercase tracking-wider font-['Inter']">
+                    <span className="text-[11px] font-semibold text-[#F87A71] uppercase tracking-wider font-['Inter']">
                       {errors.fullName}
                     </span>
                   )}
@@ -353,7 +353,7 @@ export default function Register() {
                   onBlur={() => handleFieldBlur('fullName')}
                   disabled={isSubmitting}
                   className={`w-full bg-white border ${
-                    touched.fullName && errors.fullName ? 'border-[#ef9797] ring-1 ring-[#ef9797]' : 'border-[#242323]'
+                    touched.fullName && errors.fullName ? 'border-[#F87A71] ring-1 ring-[#F87A71]' : 'border-[#242323]'
                   } px-4 py-3.5 text-base sm:text-lg font-['Barlow_Condensed'] uppercase tracking-wider text-[#242323] placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#242323] transition-all disabled:opacity-50`}
                 />
               </div>
@@ -362,10 +362,10 @@ export default function Register() {
               <div className="flex flex-col">
                 <div className="flex items-center justify-between mb-2">
                   <label htmlFor="reg-email" className="text-xs font-bold uppercase tracking-[0.18em] text-[#242323] font-['Inter']">
-                    Official Email <span className="text-[#ef9797]">*</span>
+                    Official Email <span className="text-[#F87A71]">*</span>
                   </label>
                   {touched.email && errors.email && (
-                    <span className="text-[11px] font-semibold text-[#ef9797] uppercase tracking-wider font-['Inter']">
+                    <span className="text-[11px] font-semibold text-[#F87A71] uppercase tracking-wider font-['Inter']">
                       {errors.email}
                     </span>
                   )}
@@ -381,7 +381,7 @@ export default function Register() {
                   onBlur={() => handleFieldBlur('email')}
                   disabled={isSubmitting}
                   className={`w-full bg-white border ${
-                    touched.email && errors.email ? 'border-[#ef9797] ring-1 ring-[#ef9797]' : 'border-[#242323]'
+                    touched.email && errors.email ? 'border-[#F87A71] ring-1 ring-[#F87A71]' : 'border-[#242323]'
                   } px-4 py-3.5 text-base sm:text-lg font-['Barlow_Condensed'] uppercase tracking-wider text-[#242323] placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#242323] transition-all disabled:opacity-50`}
                 />
               </div>
@@ -392,10 +392,10 @@ export default function Register() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-between mb-2">
                     <label htmlFor="reg-phone" className="text-xs font-bold uppercase tracking-[0.18em] text-[#242323] font-['Inter']">
-                      Contact Number <span className="text-[#ef9797]">*</span>
+                      Contact Number <span className="text-[#F87A71]">*</span>
                     </label>
                     {touched.contactNumber && errors.contactNumber && (
-                      <span className="text-[10px] font-semibold text-[#ef9797] uppercase tracking-wider font-['Inter']">
+                      <span className="text-[10px] font-semibold text-[#F87A71] uppercase tracking-wider font-['Inter']">
                         {errors.contactNumber}
                       </span>
                     )}
@@ -411,7 +411,7 @@ export default function Register() {
                     onBlur={() => handleFieldBlur('contactNumber')}
                     disabled={isSubmitting}
                     className={`w-full bg-white border ${
-                      touched.contactNumber && errors.contactNumber ? 'border-[#ef9797] ring-1 ring-[#ef9797]' : 'border-[#242323]'
+                      touched.contactNumber && errors.contactNumber ? 'border-[#F87A71] ring-1 ring-[#F87A71]' : 'border-[#242323]'
                     } px-4 py-3.5 text-base sm:text-lg font-['Barlow_Condensed'] uppercase tracking-wider text-[#242323] placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#242323] transition-all disabled:opacity-50`}
                   />
                 </div>
@@ -420,10 +420,10 @@ export default function Register() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-between mb-2">
                     <label htmlFor="reg-org" className="text-xs font-bold uppercase tracking-[0.18em] text-[#242323] font-['Inter']">
-                      Department / Institute <span className="text-[#ef9797]">*</span>
+                      Department / Institute <span className="text-[#F87A71]">*</span>
                     </label>
                     {touched.organizationInstitute && errors.organizationInstitute && (
-                      <span className="text-[10px] font-semibold text-[#ef9797] uppercase tracking-wider font-['Inter']">
+                      <span className="text-[10px] font-semibold text-[#F87A71] uppercase tracking-wider font-['Inter']">
                         {errors.organizationInstitute}
                       </span>
                     )}
@@ -439,7 +439,7 @@ export default function Register() {
                     onBlur={() => handleFieldBlur('organizationInstitute')}
                     disabled={isSubmitting}
                     className={`w-full bg-white border ${
-                      touched.organizationInstitute && errors.organizationInstitute ? 'border-[#ef9797] ring-1 ring-[#ef9797]' : 'border-[#242323]'
+                      touched.organizationInstitute && errors.organizationInstitute ? 'border-[#F87A71] ring-1 ring-[#F87A71]' : 'border-[#242323]'
                     } px-4 py-3.5 text-base sm:text-lg font-['Barlow_Condensed'] uppercase tracking-wider text-[#242323] placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#242323] transition-all disabled:opacity-50`}
                   />
                 </div>
@@ -450,13 +450,13 @@ export default function Register() {
                 <div className="pt-6 border-t border-[#242323]">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                     <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-[#ef9797]" />
+                      <Users className="w-4 h-4 text-[#F87A71]" />
                       <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#242323] font-['Inter']">
                         Team Roster ({formData.teamMembers.length + 1} of {event.min_team_size}-{event.max_team_size || 20})
                       </span>
                     </div>
                     {errors.teamMembers && (
-                      <span className="text-[11px] font-semibold text-[#ef9797] uppercase tracking-wider font-['Inter']">
+                      <span className="text-[11px] font-semibold text-[#F87A71] uppercase tracking-wider font-['Inter']">
                         {errors.teamMembers}
                       </span>
                     )}
@@ -495,7 +495,7 @@ export default function Register() {
                             type="button"
                             onClick={() => removeTeamMember(index)}
                             disabled={isSubmitting}
-                            className="p-2 text-gray-400 hover:text-[#ef9797] transition-colors self-end sm:self-center"
+                            className="p-2 text-gray-400 hover:text-[#F87A71] transition-colors self-end sm:self-center"
                             title="Remove Member"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -528,10 +528,10 @@ export default function Register() {
                     <div key={field.id} className="flex flex-col">
                       <div className="flex items-center justify-between mb-2">
                         <label className="text-xs font-bold uppercase tracking-[0.18em] text-[#242323] font-['Inter']">
-                          {field.label} {field.required && <span className="text-[#ef9797]">*</span>}
+                          {field.label} {field.required && <span className="text-[#F87A71]">*</span>}
                         </label>
                         {errors[field.id] && (
-                          <span className="text-[10px] font-semibold text-[#ef9797] uppercase tracking-wider font-['Inter']">
+                          <span className="text-[10px] font-semibold text-[#F87A71] uppercase tracking-wider font-['Inter']">
                             {errors[field.id]}
                           </span>
                         )}
@@ -555,7 +555,7 @@ export default function Register() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#ef9797] border-[2px] border-[#242323] text-[#242323] py-5 px-8 text-xs sm:text-sm font-bold uppercase tracking-[0.25em] hover:bg-[#f85c5c] active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 font-['Inter']"
+                  className="w-full bg-[#c33a3a] border-[2px] border-[#242323] text-white py-5 px-8 text-xs sm:text-sm font-bold uppercase tracking-[0.25em] hover:bg-[#a82e2e] active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 font-['Inter']"
                 >
                   {isSubmitting ? (
                     <>

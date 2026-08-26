@@ -52,7 +52,7 @@ export default function EventDetail() {
   if (loading) {
     return (
       <div className="min-h-[80vh] flex flex-col items-center justify-center bg-[#FAF7F2] text-[#1a1a1a] p-8">
-        <div className="w-9 h-9 border-2 border-[#1a1a1a]/20 border-t-[#F07A6E] rounded-full animate-spin mb-4" />
+        <div className="w-9 h-9 border-2 border-[#1a1a1a]/20 border-t-[#F87A71] rounded-full animate-spin mb-4" />
         <p className="font-['Geist_Mono'] text-xs tracking-[0.25em] uppercase text-[#1a1a1a]/60">
           Loading Event...
         </p>
@@ -84,7 +84,7 @@ export default function EventDetail() {
   const isArtCategory = event.category.toLowerCase() === 'art';
 
   return (
-    <div className="min-h-screen w-full bg-[#FAF7F2] text-[#1a1a1a] selection:bg-[#F07A6E] selection:text-white flex flex-col lg:flex-row overflow-x-hidden">
+    <div className="min-h-screen w-full bg-[#FAF7F2] text-[#1a1a1a] selection:bg-[#F87A71] selection:text-white flex flex-col lg:flex-row overflow-x-hidden">
       
       {/* ========================================================================= */}
       {/* 1. DESKTOP EDITORIAL SIDEBAR (lg:flex only - matches Events page)         */}
@@ -103,7 +103,7 @@ export default function EventDetail() {
 
           {/* Floral Watermark Icon */}
           <div className="mt-6 mb-8">
-            <FlowerWatermarkIcon className="w-5 h-5 text-[#F07A6E]/80" />
+            <FlowerWatermarkIcon className="w-5 h-5 text-[#F87A71]/80" />
           </div>
 
           {/* Navigation Menu */}
@@ -113,7 +113,7 @@ export default function EventDetail() {
               id="desktop-sidebar-events-link"
               className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#FADBD4] text-[#1a1a1a] font-['Geist_Mono'] text-[0.72rem] tracking-[0.16em] uppercase font-bold shadow-[0_2px_8px_rgba(240,122,110,0.12)] transition-all cursor-pointer text-left"
             >
-              <Calendar size={16} className="text-[#EE7163]" strokeWidth={2.2} />
+              <Calendar size={16} className="text-[#F87A71]" strokeWidth={2.2} />
               <span>EVENTS</span>
             </Link>
 
@@ -144,7 +144,7 @@ export default function EventDetail() {
           <button
             onClick={() => navigate('/events')}
             id="event-detail-back-btn"
-            className="inline-flex items-center gap-2 font-['Geist_Mono'] text-[0.72rem] sm:text-xs font-bold tracking-[0.22em] text-[#1a1a1a]/70 hover:text-[#EE7163] uppercase transition-colors group cursor-pointer"
+            className="inline-flex items-center gap-2 font-['Geist_Mono'] text-[0.72rem] sm:text-xs font-bold tracking-[0.22em] text-[#1a1a1a]/70 hover:text-[#F87A71] uppercase transition-colors group cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" strokeWidth={2.5} />
             <span>← {event.category} EVENTS</span>
@@ -170,7 +170,7 @@ export default function EventDetail() {
           >
             {/* SUBTLE CATEGORY LABEL (No numbers, no internal IDs) */}
             <div className="flex items-center gap-3">
-              <span className="font-['Geist_Mono'] text-[0.72rem] font-bold tracking-[0.26em] uppercase text-[#EE7163]">
+              <span className="font-['Geist_Mono'] text-[0.72rem] font-bold tracking-[0.26em] uppercase text-[#F87A71]">
                 {event.category}
               </span>
               <span className="w-1.5 h-1.5 rounded-full bg-black/20" />
@@ -196,7 +196,7 @@ export default function EventDetail() {
             <div className="py-4 border-y border-black/10 flex items-center justify-between sm:justify-start gap-8 sm:gap-14">
               <div>
                 <span className="font-['Geist_Mono'] text-[0.62rem] font-bold tracking-[0.24em] text-[#1a1a1a]/55 uppercase flex items-center gap-1.5 mb-1">
-                  <Calendar className="w-3 h-3 text-[#EE7163]" /> DATE
+                  <Calendar className="w-3 h-3 text-[#F87A71]" /> DATE
                 </span>
                 <span className="font-['Barlow_Condensed'] text-xl sm:text-2xl font-bold uppercase text-[#1a1a1a] tracking-wide">
                   {formatEventDate(event.date)}
@@ -205,7 +205,7 @@ export default function EventDetail() {
 
               <div>
                 <span className="font-['Geist_Mono'] text-[0.62rem] font-bold tracking-[0.24em] text-[#1a1a1a]/55 uppercase flex items-center gap-1.5 mb-1">
-                  <Clock className="w-3 h-3 text-[#EE7163]" /> TIME
+                  <Clock className="w-3 h-3 text-[#F87A71]" /> TIME
                 </span>
                 <span className="font-['Barlow_Condensed'] text-xl sm:text-2xl font-bold uppercase text-[#1a1a1a] tracking-wide">
                   {event.time_start || '10:00 AM'}
@@ -236,7 +236,7 @@ export default function EventDetail() {
                   aria-expanded={rulesExpanded}
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="font-['Geist_Mono'] text-[0.72rem] font-bold tracking-[0.24em] text-[#1a1a1a] uppercase group-hover:text-[#EE7163] transition-colors">
+                    <span className="font-['Geist_Mono'] text-[0.72rem] font-bold tracking-[0.24em] text-[#1a1a1a] uppercase group-hover:text-[#F87A71] transition-colors">
                       RULES & GUIDELINES
                     </span>
                     <span className="font-['Geist_Mono'] text-[0.65rem] px-2 py-0.5 rounded-full bg-black/5 text-[#1a1a1a]/60">
@@ -244,7 +244,7 @@ export default function EventDetail() {
                     </span>
                   </div>
 
-                  <div className="w-6 h-6 rounded-full border border-black/15 flex items-center justify-center text-[#1a1a1a]/70 group-hover:border-[#EE7163] group-hover:text-[#EE7163] transition-colors">
+                  <div className="w-6 h-6 rounded-full border border-black/15 flex items-center justify-center text-[#1a1a1a]/70 group-hover:border-[#F87A71] group-hover:text-[#F87A71] transition-colors">
                     {rulesExpanded ? <Minus size={13} strokeWidth={2.5} /> : <Plus size={13} strokeWidth={2.5} />}
                   </div>
                 </button>

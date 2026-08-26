@@ -278,7 +278,7 @@ export function SidebarLotusArt() {
 }
 
 // Eight-petal botanical flower glyph for logo watermark
-export function FlowerWatermarkIcon({ className = "w-4 h-4 text-[#F07A6E]" }: { className?: string }) {
+export function FlowerWatermarkIcon({ className = "w-4 h-4 text-[#F87A71]" }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="2.5" />

@@ -6,6 +6,8 @@ import { createServer as createViteServer } from "vite";
 import { getDb } from "./src/db";
 import { z } from "zod";
 import crypto from "crypto";
+import { initializeApp, getApps, App } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 
 const app = express();
 const PORT = 3000;
@@ -13,15 +15,25 @@ const PORT = 3000;
 app.use(express.json());
 
 // Firebase configuration for server-side token verification
-let firebaseApiKey: string | null = null;
+let firebaseProjectId: string | null = null;
 try {
   const configPath = path.join(process.cwd(), "firebase-applet-config.json");
   if (fs.existsSync(configPath)) {
     const parsed = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-    firebaseApiKey = parsed.apiKey || null;
+    firebaseProjectId = parsed.projectId || "gen-lang-client-0045035019";
   }
 } catch (err) {
   console.warn("Could not read firebase-applet-config.json:", err);
+  firebaseProjectId = "gen-lang-client-0045035019"; // Fallback to known project ID
+}
+
+let firebaseAdminApp: App | undefined;
+if (getApps().length === 0 && firebaseProjectId) {
+  firebaseAdminApp = initializeApp({
+    projectId: firebaseProjectId
+  });
+} else {
+  firebaseAdminApp = getApps()[0];
 }
 
 export interface VerifiedFirebaseUser {
@@ -41,73 +53,20 @@ export function extractAuthToken(req: express.Request): string | null {
 export async function verifyFirebaseIdToken(idToken: string): Promise<VerifiedFirebaseUser | null> {
   if (!idToken || typeof idToken !== "string") return null;
 
-  // 1. Authoritative verification via Google Identity Toolkit lookup
-  if (firebaseApiKey) {
-    try {
-      const verified = await new Promise<VerifiedFirebaseUser>((resolve, reject) => {
-        const payload = JSON.stringify({ idToken });
-        const req = https.request(
-          {
-            hostname: "identitytoolkit.googleapis.com",
-            path: `/v1/accounts:lookup?key=${firebaseApiKey}`,
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Content-Length": Buffer.byteLength(payload)
-            }
-          },
-          (res) => {
-            let data = "";
-            res.on("data", (chunk) => (data += chunk));
-            res.on("end", () => {
-              try {
-                const parsed = JSON.parse(data);
-                if (res.statusCode === 200 && parsed.users && parsed.users.length > 0) {
-                  resolve({
-                    uid: parsed.users[0].localId,
-                    email: (parsed.users[0].email || "").toLowerCase().trim(),
-                    emailVerified: Boolean(parsed.users[0].emailVerified)
-                  });
-                } else {
-                  reject(new Error(parsed.error?.message || "INVALID_TOKEN"));
-                }
-              } catch (e) {
-                reject(e);
-              }
-            });
-          }
-        );
-        req.on("error", reject);
-        req.write(payload);
-        req.end();
-      });
-      return verified;
-    } catch (apiErr) {
-      console.warn("Google Identity Toolkit token lookup failed, falling back to JWT payload decode:", apiErr);
-    }
-  }
-
-  // 2. Cryptographic JWT payload fallback parser
   try {
-    const parts = idToken.split(".");
-    if (parts.length === 3) {
-      const payload = JSON.parse(Buffer.from(parts[1], "base64").toString("utf-8"));
-      const now = Math.floor(Date.now() / 1000);
-      if (payload.exp && payload.exp < now) {
-        return null; // Expired token
-      }
-      const uid = payload.user_id || payload.sub || payload.uid;
-      const email = (payload.email || "").toLowerCase().trim();
-      const emailVerified = Boolean(payload.email_verified);
-      if (uid && email) {
-        return { uid, email, emailVerified };
-      }
-    }
-  } catch (parseErr) {
-    console.warn("JWT payload decode error:", parseErr);
+    const auth = getAuth(firebaseAdminApp);
+    const decodedToken = await auth.verifyIdToken(idToken);
+    
+    const uid = decodedToken.uid;
+    const email = (decodedToken.email || "").toLowerCase().trim();
+    const emailVerified = Boolean(decodedToken.email_verified);
+    
+    return { uid, email, emailVerified };
+  } catch (error) {
+    // Cryptographic verification failed
+    console.warn("Firebase ID token verification failed:", error);
+    return null; // Fail securely, do not fallback to unverified claims
   }
-
-  return null;
 }
 
 // Robust Christ University Email Validator
@@ -196,6 +155,22 @@ const registrationSchema = z.object({
 
 async function handleRegistration(req: express.Request, res: express.Response, db: any) {
   try {
+    const token = extractAuthToken(req);
+    if (!token) {
+      return res.status(401).json({
+        error: "UNAUTHORIZED",
+        message: "Authentication required for registration."
+      });
+    }
+
+    const verifiedUser = await verifyFirebaseIdToken(token);
+    if (!verifiedUser) {
+      return res.status(401).json({
+        error: "INVALID_TOKEN",
+        message: "Invalid or expired authentication token."
+      });
+    }
+
     const rawBody = {
       ...req.body,
       event_id: req.body.event_id || req.body.eventId || req.params.id,
@@ -290,18 +265,18 @@ async function handleRegistration(req: express.Request, res: express.Response, d
     const tx = await db.transaction('write');
     
     try {
-      // Find or create user
+      // Find user by firebase_uid (identity derived from token)
       const { rows: userRows } = await tx.execute({
-        sql: "SELECT id, roll_number, department FROM users WHERE LOWER(email) = ?",
-        args: [normalizedEmail]
+        sql: "SELECT id, roll_number, department FROM users WHERE firebase_uid = ?",
+        args: [verifiedUser.uid]
       });
       let userId = userRows[0]?.id as string | undefined;
 
       if (!userId) {
-        userId = crypto.randomUUID();
-        await tx.execute({
-          sql: "INSERT INTO users (id, full_name, email, phone, institute, roll_number, department) VALUES (?, ?, ?, ?, ?, ?, ?)",
-          args: [userId, normalizedFullName, normalizedEmail, normalizedPhone, normalizedInstitute, normalizedRollNumber, normalizedDepartment]
+        await tx.rollback();
+        return res.status(404).json({
+          error: "ACCOUNT_PROFILE_NOT_FOUND",
+          message: "Student account profile not found. Please complete the setup process."
         });
       } else {
         await tx.execute({
@@ -508,20 +483,35 @@ async function startServer() {
 
       if (existingByUid.length > 0) {
         const user = existingByUid[0];
+        await db.execute({
+          sql: `
+            UPDATE users 
+            SET 
+              full_name = ?,
+              phone = ?,
+              roll_number = ?,
+              department = ?,
+              email_verified = ?,
+              updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+          `,
+          args: [fullName.trim(), rawPhone, rollNumber.trim(), finalProgramme, isVerified, user.id]
+        });
+
         return res.status(200).json({
           success: true,
-          message: "Student account is already active.",
+          message: "Student account profile saved successfully.",
           user: {
             id: user.id,
             firebaseUid: verifiedUser.uid,
-            fullName: user.full_name || fullName.trim(),
+            fullName: fullName.trim(),
             email: user.email,
-            rollNumber: user.roll_number || rollNumber.trim(),
-            department: user.department || finalProgramme,
-            programme: user.department || finalProgramme,
-            phone: user.phone || rawPhone,
+            rollNumber: rollNumber.trim(),
+            department: finalProgramme,
+            programme: finalProgramme,
+            phone: rawPhone,
             institute: "Christ University",
-            emailVerified: Boolean(user.email_verified)
+            emailVerified: Boolean(isVerified || user.email_verified)
           }
         });
       }
@@ -599,16 +589,23 @@ async function startServer() {
   app.post("/api/account/sync", async (req, res) => {
     try {
       const token = extractAuthToken(req);
-      let verifiedUser: VerifiedFirebaseUser | null = null;
-      if (token) {
-        verifiedUser = await verifyFirebaseIdToken(token);
+      if (!token) {
+        return res.status(401).json({
+          error: "UNAUTHORIZED",
+          message: "Authentication required for account sync."
+        });
       }
 
-      let email = (req.headers["x-user-email"] as string || req.body.email || verifiedUser?.email || "").trim().toLowerCase();
-      if (!email) {
-        return res.status(400).json({ error: "BAD_REQUEST", message: "Email is required." });
+      const verifiedUser = await verifyFirebaseIdToken(token);
+      if (!verifiedUser) {
+        return res.status(401).json({
+          error: "INVALID_TOKEN",
+          message: "Invalid or expired authentication token."
+        });
       }
 
+      const email = verifiedUser.email.toLowerCase().trim();
+      
       if (!isValidChristEmail(email)) {
         return res.status(400).json({
           error: "INVALID_DOMAIN",
@@ -616,40 +613,42 @@ async function startServer() {
         });
       }
 
-      const { fullName, name, rollNumber, roll_number, department, phone, contactNumber, emailVerified } = req.body;
+      const { fullName, name, rollNumber, roll_number, department, phone, contactNumber } = req.body;
       const finalName = (fullName || name || "").trim();
       const finalRoll = (rollNumber || roll_number || "").trim();
       const finalDept = (department || "").trim();
       const finalPhone = (phone || contactNumber || "").replace(/\D/g, "");
-      const isVerified = (verifiedUser ? verifiedUser.emailVerified : Boolean(emailVerified)) ? 1 : 0;
-      const targetFirebaseUid = verifiedUser?.uid || req.body.userId || null;
+      const isVerified = verifiedUser.emailVerified ? 1 : 0;
+      const targetFirebaseUid = verifiedUser.uid;
 
-      // Find existing user by firebase_uid or email
-      let userQuerySql = "SELECT id, firebase_uid, full_name, roll_number, department, phone, email_verified FROM users WHERE LOWER(email) = ?";
-      let userQueryArgs: any[] = [email];
-
-      if (targetFirebaseUid) {
-        userQuerySql = "SELECT id, firebase_uid, full_name, roll_number, department, phone, email_verified FROM users WHERE firebase_uid = ? OR LOWER(email) = ?";
-        userQueryArgs = [targetFirebaseUid, email];
-      }
-
+      // Find existing user by firebase_uid
       const { rows: existingUser } = await db.execute({
-        sql: userQuerySql,
-        args: userQueryArgs
+        sql: "SELECT id, firebase_uid, full_name, roll_number, department, phone, email_verified FROM users WHERE firebase_uid = ?",
+        args: [targetFirebaseUid]
       });
 
       let userId = existingUser[0]?.id as string | undefined;
 
       if (!userId) {
-        userId = crypto.randomUUID();
-        await db.execute({
-          sql: "INSERT INTO users (id, firebase_uid, full_name, email, phone, institute, roll_number, department, email_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-          args: [userId, targetFirebaseUid, finalName, email, finalPhone, "Christ University", finalRoll || null, finalDept || null, isVerified]
+        // Find existing user by email as fallback for migration
+        const { rows: existingByEmail } = await db.execute({
+          sql: "SELECT id, firebase_uid FROM users WHERE LOWER(email) = ?",
+          args: [email]
         });
-      } else {
-        const existingRecord = existingUser[0];
-        const updatedFirebaseUid = existingRecord.firebase_uid || targetFirebaseUid;
+        
+        if (existingByEmail.length > 0) {
+           const existing = existingByEmail[0];
+           if (existing.firebase_uid && existing.firebase_uid !== targetFirebaseUid) {
+             return res.status(409).json({ error: "DUPLICATE_ACCOUNT", message: "Email associated with another account." });
+           }
+           userId = existing.id as string;
+        } else {
+          // Sync endpoint should not arbitrarily create a user. The user should use signup.
+          return res.status(404).json({ error: "ACCOUNT_PROFILE_NOT_FOUND", message: "Student account profile not found. Please complete signup." });
+        }
+      }
 
+      if (userId) {
         await db.execute({
           sql: `
             UPDATE users 
@@ -663,7 +662,7 @@ async function startServer() {
               updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
           `,
-          args: [updatedFirebaseUid, finalName, finalName, finalRoll, finalRoll, finalDept, finalDept, finalPhone, finalPhone, isVerified, userId]
+          args: [targetFirebaseUid, finalName, finalName, finalRoll, finalRoll, finalDept, finalDept, finalPhone, finalPhone, isVerified, userId]
         });
       }
 
@@ -708,39 +707,41 @@ async function startServer() {
   app.get("/api/account", async (req, res) => {
     try {
       const token = extractAuthToken(req);
-      let verifiedUser: VerifiedFirebaseUser | null = null;
-      if (token) {
-        verifiedUser = await verifyFirebaseIdToken(token);
-      }
-
-      let email = (verifiedUser?.email || req.headers["x-user-email"] as string || "").trim().toLowerCase();
-
-      if (!email && req.query.email) {
-        email = (req.query.email as string).trim().toLowerCase();
-      }
-
-      if (!email && !verifiedUser) {
+      if (!token) {
         return res.status(401).json({
           error: "UNAUTHORIZED",
           message: "Authentication required to access account."
         });
       }
 
-      // Query user in database by firebase_uid or email
-      let userSql = "SELECT id, firebase_uid, full_name, email, phone, institute, roll_number, department, email_verified, created_at FROM users WHERE LOWER(email) = ?";
-      let userArgs: any[] = [email];
-
-      if (verifiedUser?.uid) {
-        userSql = "SELECT id, firebase_uid, full_name, email, phone, institute, roll_number, department, email_verified, created_at FROM users WHERE firebase_uid = ? OR LOWER(email) = ?";
-        userArgs = [verifiedUser.uid, email];
+      const verifiedUser = await verifyFirebaseIdToken(token);
+      if (!verifiedUser) {
+        return res.status(401).json({
+          error: "INVALID_TOKEN",
+          message: "Invalid or expired authentication token."
+        });
       }
 
+      // Query user in database by firebase_uid
       const { rows: userRows } = await db.execute({
-        sql: userSql,
-        args: userArgs
+        sql: "SELECT id, firebase_uid, full_name, email, phone, institute, roll_number, department, email_verified, created_at FROM users WHERE firebase_uid = ?",
+        args: [verifiedUser.uid]
       });
 
       let user: any = userRows[0];
+      
+      // Fallback to finding by email if no firebase_uid match (migration)
+      if (!user) {
+         const { rows: emailUserRows } = await db.execute({
+           sql: "SELECT id, firebase_uid, full_name, email, phone, institute, roll_number, department, email_verified, created_at FROM users WHERE LOWER(email) = ?",
+           args: [verifiedUser.email.toLowerCase()]
+         });
+         const fallbackUser = emailUserRows[0];
+         if (fallbackUser && (!fallbackUser.firebase_uid || fallbackUser.firebase_uid === verifiedUser.uid)) {
+           user = fallbackUser;
+         }
+      }
+
       let registrations: any[] = [];
 
       if (user) {
@@ -820,29 +821,13 @@ async function startServer() {
             eventSpecificResponses: parsedEventSpecific || {}
           };
         });
-      } else if (verifiedUser || email) {
-        // Create initial student record linked to firebase_uid
-        const newUserId = crypto.randomUUID();
-        const firebaseUid = verifiedUser?.uid || null;
-        const isVerified = verifiedUser?.emailVerified ? 1 : 0;
-
-        await db.execute({
-          sql: "INSERT INTO users (id, firebase_uid, full_name, email, phone, institute, roll_number, department, email_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-          args: [newUserId, firebaseUid, "", email, "", "Christ University", null, null, isVerified]
+      }
+      
+      if (!user) {
+        return res.status(404).json({
+          error: "ACCOUNT_PROFILE_NOT_FOUND",
+          message: "Student account record not found."
         });
-
-        user = {
-          id: newUserId,
-          firebase_uid: firebaseUid,
-          full_name: "",
-          email: email,
-          phone: "",
-          institute: "Christ University",
-          roll_number: null,
-          department: null,
-          email_verified: isVerified,
-          created_at: new Date().toISOString()
-        };
       }
 
       return res.status(200).json({
@@ -871,7 +856,16 @@ async function startServer() {
   // Profile update endpoint
   app.post("/api/account/profile", async (req, res) => {
     try {
-      let email = (req.headers["x-user-email"] as string || req.body.email || "").trim().toLowerCase();
+      const token = extractAuthToken(req);
+      if (!token) {
+        return res.status(401).json({ error: "UNAUTHORIZED", message: "Authentication required to update profile." });
+      }
+
+      const verifiedUser = await verifyFirebaseIdToken(token);
+      if (!verifiedUser) {
+        return res.status(401).json({ error: "INVALID_TOKEN", message: "Invalid or expired authentication token." });
+      }
+
       const { fullName, name, rollNumber, roll_number, department, institute, phone, contactNumber } = req.body;
       const finalName = (fullName || name || "").trim();
       const finalRoll = (rollNumber || roll_number || "").trim();
@@ -879,45 +873,53 @@ async function startServer() {
       const finalInstitute = (institute || "Christ University").trim();
       const finalPhone = (phone || contactNumber || "").replace(/\D/g, "");
 
-      if (!email) {
-        return res.status(401).json({ error: "UNAUTHORIZED", message: "Authentication required to update profile." });
-      }
-
       const { rows: existingUser } = await db.execute({
-        sql: "SELECT id FROM users WHERE LOWER(email) = ?",
-        args: [email]
+        sql: "SELECT id FROM users WHERE firebase_uid = ?",
+        args: [verifiedUser.uid]
       });
 
       let userId = existingUser[0]?.id;
+      
       if (!userId) {
-        userId = crypto.randomUUID();
-        await db.execute({
-          sql: "INSERT INTO users (id, full_name, email, phone, institute, roll_number, department) VALUES (?, ?, ?, ?, ?, ?, ?)",
-          args: [userId, finalName, email, finalPhone, finalInstitute, finalRoll, finalDept]
+        // Migration fallback
+        const { rows: existingByEmail } = await db.execute({
+           sql: "SELECT id, firebase_uid FROM users WHERE LOWER(email) = ?",
+           args: [verifiedUser.email.toLowerCase()]
         });
-      } else {
-        await db.execute({
-          sql: `
-            UPDATE users 
-            SET 
-              full_name = CASE WHEN ? != '' THEN ? ELSE full_name END,
-              roll_number = CASE WHEN ? != '' THEN ? ELSE roll_number END,
-              department = CASE WHEN ? != '' THEN ? ELSE department END,
-              institute = CASE WHEN ? != '' THEN ? ELSE institute END,
-              phone = CASE WHEN ? != '' THEN ? ELSE phone END,
-              updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-          `,
-          args: [finalName, finalName, finalRoll, finalRoll, finalDept, finalDept, finalInstitute, finalInstitute, finalPhone, finalPhone, userId]
-        });
+        const fallbackUser = existingByEmail[0];
+        
+        if (fallbackUser && (!fallbackUser.firebase_uid || fallbackUser.firebase_uid === verifiedUser.uid)) {
+           userId = fallbackUser.id;
+        } else if (fallbackUser && fallbackUser.firebase_uid !== verifiedUser.uid) {
+           return res.status(409).json({ error: "DUPLICATE_ACCOUNT", message: "Email associated with another account." });
+        }
+        
+        if (!userId) {
+           return res.status(404).json({ error: "ACCOUNT_PROFILE_NOT_FOUND", message: "Student account profile not found. Please complete signup." });
+        }
       }
+
+      await db.execute({
+        sql: `
+          UPDATE users 
+          SET 
+            full_name = CASE WHEN ? != '' THEN ? ELSE full_name END,
+            roll_number = CASE WHEN ? != '' THEN ? ELSE roll_number END,
+            department = CASE WHEN ? != '' THEN ? ELSE department END,
+            institute = CASE WHEN ? != '' THEN ? ELSE institute END,
+            phone = CASE WHEN ? != '' THEN ? ELSE phone END,
+            updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `,
+        args: [finalName, finalName, finalRoll, finalRoll, finalDept, finalDept, finalInstitute, finalInstitute, finalPhone, finalPhone, userId]
+      });
 
       return res.status(200).json({
         success: true,
         user: {
           id: userId,
           fullName: finalName,
-          email,
+          email: verifiedUser.email.toLowerCase(),
           rollNumber: finalRoll,
           department: finalDept,
           institute: finalInstitute,

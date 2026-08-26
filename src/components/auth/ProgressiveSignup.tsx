@@ -6,7 +6,7 @@ import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/
 
 interface ProgressiveSignupProps {
   onSuccess: (message: string) => void;
-  onSwitchToLogin: () => void;
+  onSwitchToLogin: (email?: string) => void;
   isChristUniversityEmail: (email: string) => boolean;
 }
 
@@ -29,6 +29,7 @@ export default function ProgressiveSignup({
 
   // Step-level Error State
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isEmailInUse, setIsEmailInUse] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Input references for auto-focus
@@ -48,14 +49,16 @@ export default function ProgressiveSignup({
   // Stage validation handler
   const validateCurrentStage = (): boolean => {
     setErrorMsg(null);
+    setIsEmailInUse(false);
     if (stage === 1) {
       if (!fullName.trim() || fullName.trim().length < 2) {
         setErrorMsg('PLEASE ENTER YOUR NAME.');
         return false;
       }
     } else if (stage === 2) {
-      if (!rollNumber.trim() || rollNumber.trim().length < 2) {
-        setErrorMsg('ENTER A VALID ROLL NUMBER.');
+      const cleanRoll = rollNumber.trim();
+      if (!cleanRoll || !/^[0-9]{7}$/.test(cleanRoll)) {
+        setErrorMsg('ROLL NUMBER MUST BE EXACTLY 7 DIGITS.');
         return false;
       }
     } else if (stage === 3) {
@@ -94,6 +97,7 @@ export default function ProgressiveSignup({
 
   const handleBack = () => {
     setErrorMsg(null);
+    setIsEmailInUse(false);
     if (stage > 1) {
       setStage((prev) => prev - 1);
     }
@@ -114,6 +118,7 @@ export default function ProgressiveSignup({
   const handleFinalSubmit = async () => {
     setIsSubmitting(true);
     setErrorMsg(null);
+    setIsEmailInUse(false);
 
     const cleanEmail = email.trim().toLowerCase();
     const phoneDigits = contactNumber.replace(/\D/g, '');
@@ -154,8 +159,9 @@ export default function ProgressiveSignup({
 
       onSuccess('ACCOUNT CREATED. PLEASE CHECK YOUR INBOX/SPAM TO VERIFY YOUR COLLEGE EMAIL.');
     } catch (err: any) {
-      console.error('Progressive signup error:', err);
       if (err.code === 'auth/email-already-in-use') {
+        console.warn('Progressive signup notice: Email already in use', cleanEmail);
+        setIsEmailInUse(true);
         setErrorMsg('EMAIL ALREADY REGISTERED. PLEASE SIGN IN.');
       } else if (err.code === 'auth/weak-password') {
         setErrorMsg('PASSWORD MUST BE AT LEAST 6 CHARACTERS.');
@@ -164,6 +170,7 @@ export default function ProgressiveSignup({
       } else if (err.code === 'auth/operation-not-allowed') {
         setErrorMsg('EMAIL/PASSWORD AUTHENTICATION IS NOT ENABLED.');
       } else {
+        console.error('Progressive signup error:', err);
         setErrorMsg('COULD NOT CREATE ACCOUNT. PLEASE TRY AGAIN.');
       }
     } finally {
@@ -188,7 +195,7 @@ export default function ProgressiveSignup({
         {/* Ultra-thin progress line */}
         <div className="w-full h-[1.5px] bg-[#242323]/10 overflow-hidden rounded-full relative">
           <motion.div
-            className="h-full bg-[#EF9797]"
+            className="h-full bg-[#c33a3a]"
             initial={{ width: '14.28%' }}
             animate={{ width: `${progressPercent}%` }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
@@ -205,7 +212,7 @@ export default function ProgressiveSignup({
                 01 NAME
               </span>
               <span className="font-medium text-[#242323] flex items-center gap-1">
-                {fullName} <Check className="w-3 h-3 text-[#EF9797]" />
+                {fullName} <Check className="w-3 h-3 text-[#c33a3a]" />
               </span>
             </div>
           )}
@@ -215,7 +222,7 @@ export default function ProgressiveSignup({
                 02 ROLL NUMBER
               </span>
               <span className="font-mono text-xs font-medium text-[#242323] flex items-center gap-1">
-                {rollNumber.toUpperCase()} <Check className="w-3 h-3 text-[#EF9797]" />
+                {rollNumber.toUpperCase()} <Check className="w-3 h-3 text-[#c33a3a]" />
               </span>
             </div>
           )}
@@ -225,7 +232,7 @@ export default function ProgressiveSignup({
                 03 CONTACT
               </span>
               <span className="font-mono text-xs font-medium text-[#242323] flex items-center gap-1">
-                {contactNumber} <Check className="w-3 h-3 text-[#EF9797]" />
+                {contactNumber} <Check className="w-3 h-3 text-[#c33a3a]" />
               </span>
             </div>
           )}
@@ -235,7 +242,7 @@ export default function ProgressiveSignup({
                 04 PROGRAMME
               </span>
               <span className="font-medium text-[#242323] flex items-center gap-1">
-                {programme} <Check className="w-3 h-3 text-[#EF9797]" />
+                {programme} <Check className="w-3 h-3 text-[#c33a3a]" />
               </span>
             </div>
           )}
@@ -245,7 +252,7 @@ export default function ProgressiveSignup({
                 05 EMAIL
               </span>
               <span className="font-mono text-xs font-medium text-[#242323] flex items-center gap-1 max-w-[220px] sm:max-w-xs truncate">
-                {email.toLowerCase()} <Check className="w-3 h-3 text-[#EF9797] shrink-0" />
+                {email.toLowerCase()} <Check className="w-3 h-3 text-[#c33a3a] shrink-0" />
               </span>
             </div>
           )}
@@ -255,7 +262,7 @@ export default function ProgressiveSignup({
                 06 PASSWORD
               </span>
               <span className="text-xs font-medium text-[#242323] flex items-center gap-1">
-                •••••••• <Check className="w-3 h-3 text-[#EF9797]" />
+                •••••••• <Check className="w-3 h-3 text-[#c33a3a]" />
               </span>
             </div>
           )}
@@ -480,7 +487,7 @@ export default function ProgressiveSignup({
                 type="button"
                 disabled={isSubmitting}
                 onClick={handleFinalSubmit}
-                className="w-full bg-[#EF9797] hover:bg-[#e48383] active:scale-[0.99] rounded-full text-white sm:text-[#FAF7F2] h-[52px] px-8 text-xs sm:text-sm font-bold uppercase tracking-[0.22em] transition-all disabled:opacity-50 font-['Inter'] cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                className="w-full bg-[#c33a3a] hover:bg-[#a82e2e] active:scale-[0.99] rounded-full text-white sm:text-[#FAF7F2] h-[52px] px-8 text-xs sm:text-sm font-bold uppercase tracking-[0.22em] transition-all disabled:opacity-50 font-['Inter'] cursor-pointer flex items-center justify-center gap-2 shadow-sm"
               >
                 <span>{isSubmitting ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT →'}</span>
               </button>
@@ -489,18 +496,45 @@ export default function ProgressiveSignup({
 
           {/* Smooth Error Message Feedback */}
           <AnimatePresence>
-            {errorMsg && (
+            {isEmailInUse ? (
               <motion.div
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.2 }}
-                className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider font-['Inter'] text-[#EF9797] pt-1"
+                className="mt-3 p-4 bg-white border border-[#c33a3a]/40 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#EF9797] shrink-0" />
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2 h-2 rounded-full bg-[#c33a3a] shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider font-['Inter'] text-[#242323]">
+                      This email is already registered.
+                    </p>
+                    <p className="text-[11px] font-['Inter'] text-stone-500">
+                      Sign in directly to access your Blossoms account.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onSwitchToLogin(email.trim().toLowerCase())}
+                  className="w-full sm:w-auto bg-[#c33a3a] hover:bg-[#a82e2e] text-white rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider font-['Inter'] cursor-pointer transition-colors shrink-0 shadow-xs text-center"
+                >
+                  Sign in →
+                </button>
+              </motion.div>
+            ) : errorMsg ? (
+              <motion.div
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider font-['Inter'] text-[#c33a3a] pt-1"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#c33a3a] shrink-0" />
                 <span>{errorMsg}</span>
               </motion.div>
-            )}
+            ) : null}
           </AnimatePresence>
 
           {/* 4. Action Controls (Back / Continue) */}
@@ -522,7 +556,7 @@ export default function ProgressiveSignup({
               <button
                 type="button"
                 onClick={handleNext}
-                className="flex items-center gap-2 bg-[#EF9797] hover:bg-[#e48383] text-white rounded-full px-6 py-2.5 text-xs font-bold uppercase tracking-[0.2em] font-['Inter'] cursor-pointer transition-all active:scale-[0.98] shadow-sm ml-auto"
+                className="flex items-center gap-2 bg-[#c33a3a] hover:bg-[#a82e2e] text-white rounded-full px-6 py-2.5 text-xs font-bold uppercase tracking-[0.2em] font-['Inter'] cursor-pointer transition-all active:scale-[0.98] shadow-sm ml-auto"
               >
                 <span>CONTINUE</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -549,7 +583,7 @@ export default function ProgressiveSignup({
       {/* 5. Star Divider & Switch to Sign In */}
       <div className="flex items-center justify-center gap-3 my-6">
         <span className="h-[1px] bg-[#242323]/10 flex-1" />
-        <span className="text-[#EF9797] text-xs">✻</span>
+        <span className="text-[#c33a3a] text-xs">✻</span>
         <span className="h-[1px] bg-[#242323]/10 flex-1" />
       </div>
 
@@ -558,8 +592,8 @@ export default function ProgressiveSignup({
           Already registered?{' '}
           <button
             type="button"
-            onClick={onSwitchToLogin}
-            className="text-[#EF9797] font-semibold hover:underline cursor-pointer transition-colors"
+            onClick={() => onSwitchToLogin(email.trim().toLowerCase() || undefined)}
+            className="text-[#c33a3a] font-semibold hover:underline cursor-pointer transition-colors"
           >
             Sign in
           </button>

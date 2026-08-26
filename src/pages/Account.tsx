@@ -46,12 +46,10 @@ import ProgressiveSignup from '../components/auth/ProgressiveSignup';
 
 // Helper to test if email is a valid Christ University student email
 function isChristUniversityEmail(email: string): boolean {
-  if (!email) return false;
+  if (!email || typeof email !== 'string') return false;
   const trimmed = email.trim().toLowerCase();
-  const match = trimmed.match(/^[^\s@]+@([^\s@]+)$/);
-  if (!match) return false;
-  const domain = match[1];
-  return domain === "christuniversity.in" || domain.endsWith(".christuniversity.in");
+  const regex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9-]+\.)+christuniversity\.in$/;
+  return regex.test(trimmed);
 }
 
 export default function Account() {
@@ -162,6 +160,11 @@ export default function Account() {
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) return;
+    const cleanRoll = profileForm.rollNumber.trim();
+    if (!/^[0-9]{7}$/.test(cleanRoll)) {
+      alert('Roll number must be exactly 7 digits.');
+      return;
+    }
     setProfileSaving(true);
     try {
       const token = await currentUser.getIdToken().catch(() => '');
@@ -279,7 +282,7 @@ export default function Account() {
     }
   };
 
-  // 7. Handle Email/Password Student Authentication & Account Creation
+  // 7. Handle Email/Password Student Authentication
   const handleStudentAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthSubmitting(true);
@@ -296,129 +299,36 @@ export default function Account() {
     }
 
     try {
-      if (authMode === 'login') {
-        // ==========================================
-        // LOGIN FLOW
-        // ==========================================
-        if (!authPassword) {
-          setAuthError('PASSWORD REQUIRED');
-          setAuthSubmitting(false);
-          return;
-        }
+      // ==========================================
+      // LOGIN FLOW
+      // ==========================================
+      if (!authPassword) {
+        setAuthError('PASSWORD REQUIRED');
+        setAuthSubmitting(false);
+        return;
+      }
 
-        const userCred = await signInWithEmailAndPassword(auth, email, authPassword);
-        if (userCred.user) {
-          // Sync with backend
-          const token = await userCred.user.getIdToken();
-          await fetch('/api/account/sync', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-user-email': userCred.user.email || '',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              email: userCred.user.email,
-              emailVerified: userCred.user.emailVerified
-            })
-          }).catch(() => {});
-        }
-      } else {
-        // ==========================================
-        // CREATE ACCOUNT FLOW
-        // ==========================================
-        if (!authFullName.trim() || !authRollNumber.trim() || !authProgramme.trim() || !authPhone.trim() || !authPassword) {
-          setAuthError('PLEASE COMPLETE ALL FIELDS');
-          setAuthSubmitting(false);
-          return;
-        }
-
-        if (authPassword !== authConfirmPassword) {
-          setAuthError('PASSWORDS DO NOT MATCH');
-          setAuthSubmitting(false);
-          return;
-        }
-
-        const phoneDigits = authPhone.replace(/\D/g, '');
-        if (phoneDigits.length < 10) {
-          setAuthError('CONTACT NUMBER MUST BE AT LEAST 10 DIGITS');
-          setAuthSubmitting(false);
-          return;
-        }
-
-        if (authPassword.length < 6) {
-          setAuthError('PASSWORD MUST BE AT LEAST 6 CHARACTERS');
-          setAuthSubmitting(false);
-          return;
-        }
-
-        // Step 1: Pre-validate & register student profile in backend
-        const signupRes = await fetch('/api/auth/signup', {
+      const userCred = await signInWithEmailAndPassword(auth, email, authPassword);
+      if (userCred.user) {
+        // Sync with backend
+        const token = await userCred.user.getIdToken();
+        await fetch('/api/account/sync', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-email': userCred.user.email || '',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({
-            fullName: authFullName.trim(),
-            collegeEmail: email,
-            rollNumber: authRollNumber.trim(),
-            programme: authProgramme.trim(),
-            department: authProgramme.trim(),
-            contactNumber: phoneDigits,
-            password: authPassword
+            email: userCred.user.email,
+            emailVerified: userCred.user.emailVerified
           })
-        });
-
-        const signupData = await signupRes.json().catch(() => ({}));
-
-        if (!signupRes.ok) {
-          if (signupRes.status === 409) {
-            setAuthError('EMAIL ALREADY REGISTERED');
-          } else {
-            setAuthError(signupData.message ? String(signupData.message).toUpperCase() : 'COULD NOT CREATE ACCOUNT');
-          }
-          setAuthSubmitting(false);
-          return;
-        }
-
-        // Step 2: Create Firebase Auth credentials
-        const userCred = await createUserWithEmailAndPassword(auth, email, authPassword);
-
-        // Step 3: Trigger official verification email & profile persistence
-        if (userCred.user) {
-          const token = await userCred.user.getIdToken();
-          const signupRes = await fetch('/api/auth/signup', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              collegeEmail: email,
-              fullName: authFullName.trim(),
-              rollNumber: authRollNumber.trim(),
-              programme: authProgramme.trim(),
-              department: authProgramme.trim(),
-              contactNumber: phoneDigits
-            })
-          });
-
-          if (!signupRes.ok) {
-            const errData = await signupRes.json().catch(() => ({}));
-            throw new Error(errData.message || 'Failed to save student profile in database.');
-          }
-
-          await sendEmailVerification(userCred.user).catch((e) => console.warn('Verification email dispatch warning:', e));
-        }
-
-        setAuthSuccessMessage('ACCOUNT CREATED. PLEASE VERIFY YOUR COLLEGE EMAIL.');
+        }).catch(() => {});
       }
     } catch (err: any) {
       console.error('Student Auth failure:', err);
       if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
         setAuthError('INCORRECT EMAIL OR PASSWORD. PLEASE CHECK OR RESET PASSWORD.');
-      } else if (err.code === 'auth/email-already-in-use') {
-        setAuthError('EMAIL ALREADY REGISTERED. PLEASE SIGN IN.');
-      } else if (err.code === 'auth/weak-password') {
-        setAuthError('PASSWORD MUST BE AT LEAST 6 CHARACTERS.');
       } else if (err.code === 'auth/too-many-requests') {
         setAuthError('TOO MANY ATTEMPTS. PLEASE WAIT OR RESET YOUR PASSWORD.');
       } else if (err.code === 'auth/operation-not-allowed') {
@@ -492,14 +402,14 @@ export default function Account() {
               </h1>
 
               {/* Coral Accent Line */}
-              <div className="w-10 h-[2.5px] bg-[#EF9797] my-5 sm:my-6" />
+              <div className="w-10 h-[2.5px] bg-[#c33a3a] my-5 sm:my-6" />
             </div>
 
             {/* Botanical Line Art & Side Meta Details */}
             <div className="hidden lg:flex items-end justify-between pt-12 mt-8 relative">
               {/* Soft Watercolor Blush & SVG Botanical Flower Art */}
               <div className="relative w-48 h-48 pointer-events-none select-none opacity-85">
-                <div className="absolute -inset-4 bg-gradient-to-tr from-[#EF9797]/25 via-[#EF9797]/15 to-transparent rounded-full blur-2xl pointer-events-none" />
+                <div className="absolute -inset-4 bg-gradient-to-tr from-[#c33a3a]/25 via-[#c33a3a]/15 to-transparent rounded-full blur-2xl pointer-events-none" />
                 <svg viewBox="0 0 200 200" fill="none" className="w-full h-full text-[#9C8277]/70">
                   {/* Stem & Leaves */}
                   <path d="M70 190 C70 140 85 100 100 70" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
@@ -512,14 +422,14 @@ export default function Account() {
                   <path d="M100 70 C90 85 85 105 105 108 C115 95 108 80 100 70 Z" stroke="currentColor" strokeWidth="1.2" fill="#FAF6F0" fillOpacity="0.7" />
                   <path d="M100 70 C68 80 60 98 75 106 C88 95 95 82 100 70 Z" stroke="currentColor" strokeWidth="1.2" fill="#FAF6F0" fillOpacity="0.7" />
                   {/* Flower Core */}
-                  <circle cx="100" cy="70" r="3.5" fill="#EF9797" />
+                  <circle cx="100" cy="70" r="3.5" fill="#c33a3a" />
                 </svg>
               </div>
 
               {/* Side Meta Label */}
               <div className="flex items-center gap-2 text-[#737373] font-mono text-[9px] tracking-[0.25em] uppercase pb-2">
                 <span>— BLOSSOMS 26</span>
-                <span className="text-[#EF9797] text-xs">✻</span>
+                <span className="text-[#c33a3a] text-xs">✻</span>
               </div>
             </div>
           </div>
@@ -568,7 +478,10 @@ export default function Account() {
                     setAuthSuccessMessage(msg);
                     setAuthMode('login');
                   }}
-                  onSwitchToLogin={() => {
+                  onSwitchToLogin={(prefillEmail?: string) => {
+                    if (prefillEmail) {
+                      setAuthEmail(prefillEmail);
+                    }
                     setAuthMode('login');
                     setAuthError(null);
                     setAuthSuccessMessage(null);
@@ -582,7 +495,7 @@ export default function Account() {
                     <h2 className="font-['Barlow_Condensed'] text-3xl sm:text-4xl font-light uppercase tracking-wide text-[#1C1A1A]">
                       SIGN IN
                     </h2>
-                    <div className="w-8 h-[2px] bg-[#EF9797] mt-2" />
+                    <div className="w-8 h-[2px] bg-[#c33a3a] mt-2" />
                   </div>
 
                   {/* Success Feedback Banner */}
@@ -597,9 +510,9 @@ export default function Account() {
 
                   {/* Error Feedback Banner */}
                   {authError && (
-                    <div className="mb-5 p-3.5 bg-white border border-[#EF9797]/60 rounded-2xl flex items-center justify-between gap-3">
+                    <div className="mb-5 p-3.5 bg-white border border-[#c33a3a]/60 rounded-2xl flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5">
-                        <span className="w-2 h-2 rounded-full bg-[#EF9797] shrink-0" />
+                        <span className="w-2 h-2 rounded-full bg-[#c33a3a] shrink-0" />
                         <p className="text-xs font-semibold tracking-wider uppercase font-['Inter'] text-[#242323]">
                           {authError}
                         </p>
@@ -662,7 +575,7 @@ export default function Account() {
                         <button
                           type="button"
                           onClick={() => setShowPasswordReset(true)}
-                          className="text-xs font-['Inter'] font-medium text-[#EF9797] hover:text-[#e48383] hover:underline transition-colors cursor-pointer"
+                          className="text-xs font-['Inter'] font-medium text-[#c33a3a] hover:underline transition-colors cursor-pointer"
                         >
                           Forgot password?
                         </button>
@@ -674,7 +587,7 @@ export default function Account() {
                       <button
                         type="submit"
                         disabled={authSubmitting}
-                        className="w-full bg-[#EF9797] hover:bg-[#e48383] active:scale-[0.99] rounded-full text-white sm:text-[#FAF7F2] h-[52px] px-8 text-xs sm:text-sm font-bold uppercase tracking-[0.22em] transition-all disabled:opacity-50 font-['Inter'] cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                        className="w-full bg-[#c33a3a] hover:bg-[#a82e2e] active:scale-[0.99] rounded-full text-white sm:text-[#FAF7F2] h-[52px] px-8 text-xs sm:text-sm font-bold uppercase tracking-[0.22em] transition-all disabled:opacity-50 font-['Inter'] cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                       >
                         <span>
                           {authSubmitting ? 'AUTHENTICATING...' : 'SIGN IN →'}
@@ -686,7 +599,7 @@ export default function Account() {
                   {/* Star Divider & Secondary Switcher */}
                   <div className="flex items-center justify-center gap-3 my-6">
                     <span className="h-[1px] bg-[#242323]/10 flex-1" />
-                    <span className="text-[#EF9797] text-xs">✻</span>
+                    <span className="text-[#c33a3a] text-xs">✻</span>
                     <span className="h-[1px] bg-[#242323]/10 flex-1" />
                   </div>
 
@@ -700,7 +613,7 @@ export default function Account() {
                           setAuthError(null);
                           setAuthSuccessMessage(null);
                         }}
-                        className="text-[#EF9797] font-semibold hover:underline cursor-pointer transition-colors"
+                        className="text-[#c33a3a] font-semibold hover:underline cursor-pointer transition-colors"
                       >
                         Create your account
                       </button>
@@ -768,7 +681,7 @@ export default function Account() {
                       <button
                         type="submit"
                         disabled={resetSubmitting}
-                        className="rounded-full bg-[#EF9797] hover:bg-[#e48383] text-white px-6 py-2.5 text-xs font-bold uppercase tracking-wider font-['Inter'] disabled:opacity-50 cursor-pointer shadow-sm"
+                        className="rounded-full bg-[#c33a3a] hover:bg-[#a82e2e] text-white px-6 py-2.5 text-xs font-bold uppercase tracking-wider font-['Inter'] disabled:opacity-50 cursor-pointer shadow-sm"
                       >
                         {resetSubmitting ? 'SENDING...' : 'SEND RESET LINK →'}
                       </button>
@@ -809,7 +722,7 @@ export default function Account() {
   if (apiError && !accountData) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center px-6 py-20 text-center max-w-md mx-auto">
-        <AlertCircle className="w-12 h-12 text-[#ef9797] mb-6 stroke-[1.5]" />
+        <AlertCircle className="w-12 h-12 text-[#c33a3a] mb-6 stroke-[1.5]" />
         <h2 className="text-3xl font-normal uppercase font-['Barlow_Condensed'] text-[#242323] mb-2 tracking-wide">
           Account Information Could Not Be Loaded
         </h2>
@@ -869,7 +782,7 @@ export default function Account() {
             <form onSubmit={handleSaveProfile} className="space-y-4">
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-[0.18em] text-[#242323] font-['Inter'] mb-1.5">
-                  Full Name <span className="text-[#ef9797]">*</span>
+                  Full Name <span className="text-[#c33a3a]">*</span>
                 </label>
                 <input
                   type="text"
@@ -882,7 +795,7 @@ export default function Account() {
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-[0.18em] text-[#242323] font-['Inter'] mb-1.5">
-                  Roll Number / Student ID <span className="text-[#ef9797]">*</span>
+                  Roll Number / Student ID <span className="text-[#c33a3a]">*</span>
                 </label>
                 <input
                   type="text"
@@ -896,7 +809,7 @@ export default function Account() {
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-[0.18em] text-[#242323] font-['Inter'] mb-1.5">
-                  Programme <span className="text-[#ef9797]">*</span>
+                  Programme <span className="text-[#c33a3a]">*</span>
                 </label>
                 <input
                   type="text"
@@ -910,7 +823,7 @@ export default function Account() {
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-[0.18em] text-[#242323] font-['Inter'] mb-1.5">
-                  Contact Number <span className="text-[#ef9797]">*</span>
+                  Contact Number <span className="text-[#c33a3a]">*</span>
                 </label>
                 <input
                   type="tel"
@@ -933,7 +846,7 @@ export default function Account() {
                 <button
                   type="submit"
                   disabled={profileSaving}
-                  className="bg-[#ef9797] border border-[#242323] px-6 py-2.5 text-xs font-bold uppercase tracking-wider font-['Inter'] hover:bg-[#f85c5c] disabled:opacity-50"
+                  className="bg-[#c33a3a] border border-[#242323] text-white px-6 py-2.5 text-xs font-bold uppercase tracking-wider font-['Inter'] hover:bg-[#a82e2e] disabled:opacity-50"
                 >
                   {profileSaving ? 'Saving...' : 'Save Profile'}
                 </button>
@@ -953,7 +866,7 @@ export default function Account() {
           <div className="flex items-center gap-3">
             <Link
               to="/events"
-              className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold tracking-[0.2em] text-gray-500 hover:text-[#ef9797] uppercase font-['Inter'] transition-colors"
+              className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold tracking-[0.2em] text-gray-500 hover:text-[#c33a3a] uppercase font-['Inter'] transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Back to Events
             </Link>
@@ -1025,7 +938,7 @@ export default function Account() {
             <div className="bg-[#FAF7F2] border border-[#242323] p-6 sm:p-8 relative">
               <div className="flex items-center justify-between border-b border-[#242323] pb-3 mb-6">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold tracking-[0.25em] text-[#ef9797] uppercase font-['Inter']">
+                  <span className="text-[10px] font-bold tracking-[0.25em] text-[#c33a3a] uppercase font-['Inter']">
                     Student Profile
                   </span>
                   {isVerified ? (
@@ -1040,7 +953,7 @@ export default function Account() {
                 </div>
                 <button
                   onClick={() => setIsEditingProfile(true)}
-                  className="inline-flex items-center gap-1 text-[10px] font-bold tracking-widest uppercase text-[#242323] hover:text-[#ef9797] transition-colors font-['Inter']"
+                  className="inline-flex items-center gap-1 text-[10px] font-bold tracking-widest uppercase text-[#242323] hover:text-[#c33a3a] transition-colors font-['Inter']"
                 >
                   <Edit3 className="w-3 h-3" /> Edit
                 </button>
@@ -1069,7 +982,7 @@ export default function Account() {
                       {user.rollNumber || user.roll_number || (
                         <button
                           onClick={() => setIsEditingProfile(true)}
-                          className="text-[#ef9797] underline text-xs font-['Inter'] tracking-wider uppercase font-semibold"
+                          className="text-[#c33a3a] underline text-xs font-['Inter'] tracking-wider uppercase font-semibold"
                         >
                           + Set Roll Number
                         </button>
@@ -1102,7 +1015,7 @@ export default function Account() {
                       {user.programme || user.department || (
                         <button
                           onClick={() => setIsEditingProfile(true)}
-                          className="text-[#ef9797] underline text-xs font-['Inter'] tracking-wider uppercase font-semibold"
+                          className="text-[#c33a3a] underline text-xs font-['Inter'] tracking-wider uppercase font-semibold"
                         >
                           + Set Programme
                         </button>
@@ -1122,7 +1035,7 @@ export default function Account() {
                       {user.phone || user.contactNumber || (
                         <button
                           onClick={() => setIsEditingProfile(true)}
-                          className="text-[#ef9797] underline text-xs font-['Inter'] tracking-wider uppercase font-semibold"
+                          className="text-[#c33a3a] underline text-xs font-['Inter'] tracking-wider uppercase font-semibold"
                         >
                           + Set Contact Number
                         </button>
@@ -1197,7 +1110,7 @@ export default function Account() {
             {registrations.length === 0 ? (
               <div className="bg-[#FAF7F2] border border-[#242323] p-8 sm:p-14 text-center">
                 <div className="w-12 h-12 rounded-full bg-[#F3EFEA] border border-[#242323] flex items-center justify-center mx-auto mb-5 text-[#242323]">
-                  <Sparkles className="w-5 h-5 text-[#ef9797]" />
+                  <Sparkles className="w-5 h-5 text-[#c33a3a]" />
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-normal font-['Barlow_Condensed'] uppercase text-[#242323] mb-2 tracking-wide">
                   No Active Registrations Found
@@ -1207,7 +1120,7 @@ export default function Account() {
                 </p>
                 <Link
                   to="/events"
-                  className="inline-flex items-center gap-2 bg-[#ef9797] border border-[#242323] text-[#242323] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#f85c5c] active:scale-[0.99] transition-all font-['Inter'] shadow-sm"
+                  className="inline-flex items-center gap-2 bg-[#c33a3a] border border-[#242323] text-white px-8 py-3.5 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#a82e2e] active:scale-[0.99] transition-all font-['Inter'] shadow-sm"
                 >
                   Explore Events Registry <ArrowRight className="w-4 h-4" />
                 </Link>
@@ -1229,7 +1142,7 @@ export default function Account() {
                       <div className="p-5 sm:p-6">
                         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 pb-3 mb-4">
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold tracking-[0.2em] text-[#ef9797] uppercase font-['Inter']">
+                            <span className="text-[10px] font-bold tracking-[0.2em] text-[#c33a3a] uppercase font-['Inter']">
                               {reg.event.category}
                             </span>
                             <span className="text-gray-300">•</span>
@@ -1264,7 +1177,7 @@ export default function Account() {
                           <div className="flex items-center gap-3">
                             <Link
                               to={`/events/${reg.eventId}`}
-                              className="text-[11px] font-bold tracking-[0.18em] uppercase text-[#242323] hover:text-[#ef9797] border-b border-[#242323] font-['Inter']"
+                              className="text-[11px] font-bold tracking-[0.18em] uppercase text-[#242323] hover:text-[#c33a3a] border-b border-[#242323] font-['Inter']"
                             >
                               View Event Details
                             </Link>
@@ -1285,7 +1198,7 @@ export default function Account() {
                           {isGroup && (
                             <button
                               onClick={() => toggleEventExpansion(reg.id)}
-                              className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#242323] hover:text-[#ef9797] font-['Inter']"
+                              className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#242323] hover:text-[#c33a3a] font-['Inter']"
                             >
                               <Users className="w-3.5 h-3.5" />
                               <span>{isExpanded ? 'Hide Team Roster' : `View Team Roster (${teamCount + 1})`}</span>

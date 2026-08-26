@@ -335,9 +335,18 @@ export function useRegistration(eventId: string | undefined) {
       };
 
       try {
+        const currentUser = auth.currentUser;
+        let token = '';
+        if (currentUser) {
+          token = await currentUser.getIdToken(true);
+        }
+
         const response = await fetch('/api/register', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          },
           body: JSON.stringify(payload),
         });
 

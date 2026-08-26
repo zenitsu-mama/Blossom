@@ -299,7 +299,7 @@ function DanceShoesIcon({ className = "w-4 h-4 text-current" }: { className?: st
 }
 
 // Eight-petal botanical flower glyph for logo watermark
-function FlowerWatermarkIcon({ className = "w-4 h-4 text-[#F07A6E]" }: { className?: string }) {
+function FlowerWatermarkIcon({ className = "w-4 h-4 text-[#F87A71]" }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="2.5" />
@@ -686,9 +686,7 @@ export default function Events() {
                     <button
                       id="mobile-close-category-back-btn"
                       onClick={() => setSelectedCategory(null)}
-                      className={`inline-flex items-center gap-1.5 font-['Barlow_Condensed'] text-sm font-bold uppercase tracking-[0.2em] py-1 cursor-pointer active:translate-x-[-2px] transition-transform ${
-                        activeCategoryObj.key === 'art' ? 'text-[#F9A492]' : 'text-[#F07A6E]'
-                      }`}
+                      className="inline-flex items-center gap-1.5 font-['Barlow_Condensed'] text-sm font-bold uppercase tracking-[0.2em] py-1 cursor-pointer active:translate-x-[-2px] transition-transform text-[#F87A71]"
                     >
                       <ArrowLeft size={16} strokeWidth={2.5} />
                       <span>CATEGORIES</span>
@@ -768,9 +766,7 @@ export default function Events() {
                             }`}
                           >
                             {/* Numeral */}
-                            <span className={`font-['Barlow_Condensed'] text-2xl font-black leading-none ${
-                              activeCategoryObj.key === 'art' ? 'text-[#F9A492]' : 'text-[#F07A6E]'
-                            }`}>
+                            <span className="font-['Barlow_Condensed'] text-2xl font-black leading-none text-[#F87A71]">
                               {num}
                             </span>
 
@@ -789,9 +785,7 @@ export default function Events() {
                             </div>
 
                             {/* Coral Arrow */}
-                            <span className={`text-lg font-light group-hover:translate-x-1 transition-transform ml-1 ${
-                              activeCategoryObj.key === 'art' ? 'text-[#F9A492]' : 'text-[#F07A6E]'
-                            }`}>
+                            <span className="text-lg font-light group-hover:translate-x-1 transition-transform ml-1 text-[#F87A71]">
                               →
                             </span>
                           </Link>
@@ -825,7 +819,7 @@ export default function Events() {
 
             {/* Small Floral Watermark Icon */}
             <div className="mt-6 mb-8">
-              <FlowerWatermarkIcon className="w-5 h-5 text-[#F07A6E]/80" />
+              <FlowerWatermarkIcon className="w-5 h-5 text-[#F87A71]/80" />
             </div>
 
             {/* Navigation Menu */}
@@ -835,7 +829,7 @@ export default function Events() {
                 onClick={() => setSelectedCategory(null)}
                 className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#FADBD4] text-[#1a1a1a] font-['Geist_Mono'] text-[0.72rem] tracking-[0.16em] uppercase font-bold shadow-[0_2px_8px_rgba(240,122,110,0.12)] transition-all cursor-pointer text-left"
               >
-                <Calendar size={16} className="text-[#EE7163]" strokeWidth={2.2} />
+                <Calendar size={16} className="text-[#F87A71]" strokeWidth={2.2} />
                 <span>EVENTS</span>
               </button>
 
@@ -873,7 +867,7 @@ export default function Events() {
               {/* Editorial Tagline with Blossom Icon */}
               <div className="hidden xl:flex items-center gap-2 font-['Geist_Mono'] text-[0.68rem] tracking-[0.22em] text-[#1a1a1a]/60 uppercase pt-2">
                 <span>CULTIVATE. CELEBRATE. CREATE.</span>
-                <FlowerWatermarkIcon className="w-4 h-4 text-[#F07A6E]" />
+                <FlowerWatermarkIcon className="w-4 h-4 text-[#F87A71]" />
               </div>
             </div>
 
@@ -1164,9 +1158,7 @@ export default function Events() {
                       <button
                         id="desktop-close-category-back-btn"
                         onClick={() => setSelectedCategory(null)}
-                        className={`inline-flex items-center gap-2 font-['Barlow_Condensed'] text-lg font-bold uppercase tracking-[0.2em] py-1 cursor-pointer active:translate-x-[-3px] transition-transform ${
-                          activeCategoryObj.key === 'art' ? 'text-[#F9A492]' : 'text-[#EE7163]'
-                        }`}
+                        className="inline-flex items-center gap-2 font-['Barlow_Condensed'] text-lg font-bold uppercase tracking-[0.2em] py-1 cursor-pointer active:translate-x-[-3px] transition-transform text-[#F87A71]"
                       >
                         <ArrowLeft size={18} strokeWidth={2.5} />
                         <span>CATEGORIES</span>
@@ -1247,9 +1239,7 @@ export default function Events() {
                                 }`}
                               >
                                 {/* Numeral */}
-                                <span className={`font-['Barlow_Condensed'] text-3xl xl:text-4xl font-black leading-none ${
-                                  activeCategoryObj.key === 'art' ? 'text-[#F9A492]' : 'text-[#EE7163]'
-                                }`}>
+                                <span className="font-['Barlow_Condensed'] text-3xl xl:text-4xl font-black leading-none text-[#F87A71]">
                                   {num}
                                 </span>
 
@@ -1268,9 +1258,7 @@ export default function Events() {
                                 </div>
 
                                 {/* Arrow Indicator */}
-                                <span className={`text-2xl font-light group-hover:translate-x-2 transition-transform ml-2 ${
-                                  activeCategoryObj.key === 'art' ? 'text-[#F9A492]' : 'text-[#EE7163]'
-                                }`}>
+                                <span className="text-2xl font-light group-hover:translate-x-2 transition-transform ml-2 text-[#F87A71]">
                                   →
                                 </span>
                               </Link>

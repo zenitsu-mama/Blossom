@@ -24,7 +24,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-[#FAF7F2] text-[#1a1a1a] font-['Geist'] antialiased selection:bg-[#ef9797] selection:text-white overflow-hidden">
+    <div className="h-screen flex flex-col bg-[#FAF7F2] text-[#1a1a1a] font-['Geist'] antialiased selection:bg-[#c33a3a] selection:text-white overflow-hidden">
       {/* Global Header (Hidden on Desktop on /events because /events provides its own dedicated editorial sidebar) */}
       <header className={`shrink-0 h-[70px] md:h-[85px] flex items-center justify-between px-[4vw] border-b border-black/10 bg-[#FAF7F2] ${isEvents ? 'lg:hidden' : ''}`}>
         <Link to="/" className="font-['Cormorant_Garamond'] font-semibold italic text-3xl text-[#1a1a1a]">
@@ -33,9 +33,9 @@ function Layout({ children }: { children: React.ReactNode }) {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex gap-12 items-center">
-          <Link to="/" className="font-['Geist_Mono'] text-[0.7rem] tracking-[0.15em] uppercase text-[#1a1a1a] hover:text-[#F07A6E] transition-colors">Home</Link>
-          <Link to="/events" className={`font-['Geist_Mono'] text-[0.7rem] tracking-[0.15em] uppercase transition-colors ${isEvents ? 'font-bold text-[#F07A6E]' : 'text-[#1a1a1a] hover:text-[#F07A6E]'}`}>Events</Link>
-          <Link to="/account" className={`font-['Geist_Mono'] text-[0.7rem] tracking-[0.15em] uppercase transition-colors ${isAccount ? 'font-bold text-[#F07A6E]' : 'text-[#1a1a1a] hover:text-[#F07A6E]'}`}>Account</Link>
+          <Link to="/" className="font-['Geist_Mono'] text-[0.7rem] tracking-[0.15em] uppercase text-[#1a1a1a] hover:text-[#c33a3a] transition-colors">Home</Link>
+          <Link to="/events" className={`font-['Geist_Mono'] text-[0.7rem] tracking-[0.15em] uppercase transition-colors ${isEvents ? 'font-bold text-[#c33a3a]' : 'text-[#1a1a1a] hover:text-[#c33a3a]'}`}>Events</Link>
+          <Link to="/account" className={`font-['Geist_Mono'] text-[0.7rem] tracking-[0.15em] uppercase transition-colors ${isAccount ? 'font-bold text-[#c33a3a]' : 'text-[#1a1a1a] hover:text-[#c33a3a]'}`}>Account</Link>
         </nav>
 
         {/* Mobile Nav Toggle */}
