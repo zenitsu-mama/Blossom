@@ -12,8 +12,12 @@ export async function getDb(): Promise<Client> {
   const dbPath = path.join(process.cwd(), 'database.sqlite');
   
   try {
+    const url = process.env.DATABASE_URL || ('file:' + dbPath);
+    const authToken = process.env.DATABASE_AUTH_TOKEN;
+    
     const client = createClient({
-      url: 'file:' + dbPath
+      url,
+      ...(authToken ? { authToken } : {})
     });
     
     // Quick sanity check to detect corrupt disk image
@@ -39,8 +43,11 @@ export async function getDb(): Promise<Client> {
         if (fs.existsSync(dbPath + '-wal')) fs.unlinkSync(dbPath + '-wal');
         if (fs.existsSync(dbPath + '-shm')) fs.unlinkSync(dbPath + '-shm');
         
+        const url = process.env.DATABASE_URL || ('file:' + dbPath);
+        const authToken = process.env.DATABASE_AUTH_TOKEN;
         const freshClient = createClient({
-          url: 'file:' + dbPath
+          url,
+          ...(authToken ? { authToken } : {})
         });
         await freshClient.execute('PRAGMA foreign_keys = ON;');
         await initializeDb(freshClient);

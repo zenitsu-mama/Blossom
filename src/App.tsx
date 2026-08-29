@@ -6,6 +6,7 @@ import Events from './pages/Events';
 import EventDetail from './pages/EventDetail';
 import Register from './pages/Register';
 import Account from './pages/Account';
+import Developer from './pages/Developer';
 
 function Layout({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -13,6 +14,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   const isLanding = location.pathname === '/';
   const isEvents = location.pathname.startsWith('/events');
   const isAccount = location.pathname.startsWith('/account');
+  const isDeveloper = location.pathname.startsWith('/developer');
 
   // Close menu on route change
   useEffect(() => {
@@ -21,6 +23,10 @@ function Layout({ children }: { children: React.ReactNode }) {
 
   if (isLanding) {
     return <div className="bg-[#FDF8F5] min-h-screen text-[#242323] font-['Geist']">{children}</div>;
+  }
+
+  if (isDeveloper) {
+    return <>{children}</>; // Developer page has its own layout
   }
 
   return (
@@ -80,6 +86,7 @@ export default function App() {
           <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/events/:id/register" element={<Register />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/developer" element={<Developer />} />
         </Routes>
       </Layout>
     </Router>

@@ -7,6 +7,7 @@ import { getDb } from "./src/db";
 import { z } from "zod";
 import crypto from "crypto";
 import { initializeApp, getApps, App } from "firebase-admin/app";
+import * as xlsx from "xlsx";
 import { getAuth } from "firebase-admin/auth";
 
 const app = express();
@@ -340,8 +341,15 @@ async function handleRegistration(req: express.Request, res: express.Response, d
   }
 }
 
-async function startServer() {
-  const db = await getDb();
+
+// Database proxy for serverless environments
+const db: any = new Proxy({}, {
+  get: (target, prop) => async (...args) => {
+    const actualDb = await getDb();
+    return (actualDb)[prop](...args);
+  }
+});
+
 
   // API Routes
   app.get("/api/events", async (req, res) => {
@@ -953,6 +961,204 @@ async function startServer() {
     }
   });
 
+  // ==========================================
+  // DEVELOPER INTERFACE API
+  // ==========================================
+  
+  const DEVELOPER_EMAILS = [
+    "rhariharan1616@gmail.com"
+  ]; // Can be moved to env vars later
+
+  const checkDeveloperAuth = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+      const idToken = extractAuthToken(req);
+      if (!idToken) return res.status(401).json({ error: "UNAUTHORIZED", message: "Missing token" });
+
+      const verifiedUser = await verifyFirebaseIdToken(idToken);
+      if (!verifiedUser) return res.status(401).json({ error: "UNAUTHORIZED", message: "Invalid token" });
+
+      if (!DEVELOPER_EMAILS.includes(verifiedUser.email.toLowerCase())) {
+        return res.status(403).json({ error: "FORBIDDEN", message: "Not authorized as developer" });
+      }
+
+      (req as any).developerUser = verifiedUser;
+      next();
+    } catch (e) {
+      console.error("Developer auth error:", e);
+      return res.status(500).json({ error: "SERVER_ERROR", message: "Auth error" });
+    }
+  };
+
+  app.get("/api/developer/events", checkDeveloperAuth, async (req, res) => {
+    try {
+      const { rows: events } = await db.execute("SELECT id, name, category, type FROM events ORDER BY category, name");
+      const { rows: stats } = await db.execute("SELECT event_id, COUNT(*) as count FROM registrations GROUP BY event_id");
+      
+      const countsMap = new Map();
+      for (const stat of stats) {
+        countsMap.set(stat.event_id, stat.count);
+      }
+
+      const eventsWithStats = events.map((e: any) => ({
+        ...e,
+        registration_count: countsMap.get(e.id) || 0
+      }));
+
+      res.status(200).json({ events: eventsWithStats });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "server_error", message: "Server error" });
+    }
+  });
+
+  app.get("/api/developer/events/:eventId/registrations", checkDeveloperAuth, async (req, res) => {
+    try {
+      const { eventId } = req.params;
+      const { rows: registrations } = await db.execute({
+        sql: `SELECT r.id, r.status, r.team_members, r.created_at, 
+                     u.full_name, u.email, u.roll_number, u.phone, u.department as programme, u.institute
+              FROM registrations r
+              JOIN users u ON r.user_id = u.id
+              WHERE r.event_id = ?
+              ORDER BY r.created_at DESC`,
+        args: [eventId]
+      });
+      
+      // Parse team members if stringified
+      const formattedRegistrations = registrations.map((r: any) => ({
+        ...r,
+        team_members: typeof r.team_members === 'string' ? JSON.parse(r.team_members) : r.team_members
+      }));
+
+      res.status(200).json({ registrations: formattedRegistrations });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "server_error", message: "Server error" });
+    }
+  });
+
+  app.get("/api/developer/export/event/:eventId", checkDeveloperAuth, async (req, res) => {
+    try {
+      const { eventId } = req.params;
+      
+      const { rows: events } = await db.execute({
+        sql: `SELECT name FROM events WHERE id = ?`,
+        args: [eventId]
+      });
+      
+      if (events.length === 0) return res.status(404).json({ error: "NOT_FOUND" });
+      const eventName = (events[0] as any).name;
+
+      const { rows: registrations } = await db.execute({
+        sql: `SELECT u.full_name as Name, u.email as Email, u.roll_number as "Roll Number", 
+                     u.phone as "Contact Number", u.department as Programme, r.status as Status, 
+                     r.team_members as "Team Members", r.created_at as "Registered On"
+              FROM registrations r
+              JOIN users u ON r.user_id = u.id
+              WHERE r.event_id = ?
+              ORDER BY r.created_at DESC`,
+        args: [eventId]
+      });
+
+      const formattedData = registrations.map((r: any) => {
+        let teamMembersStr = "";
+        try {
+          if (r["Team Members"]) {
+            const team = JSON.parse(r["Team Members"]);
+            if (Array.isArray(team)) {
+              teamMembersStr = team.map((m: any) => `${m.name} (${m.reg_number})`).join(", ");
+            }
+          }
+        } catch(e) {}
+        
+        return {
+          ...r,
+          "Team Members": teamMembersStr,
+          "Registered On": new Date(r["Registered On"]).toLocaleString()
+        };
+      });
+
+      const worksheet = xlsx.utils.json_to_sheet(formattedData);
+      const workbook = xlsx.utils.book_new();
+      xlsx.utils.book_append_sheet(workbook, worksheet, "Registrations");
+      
+      const buffer = xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
+      
+      res.setHeader('Content-Disposition', `attachment; filename="Blossoms_${eventName.replace(/\\s+/g, '_')}_Registrations.xlsx"`);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      return res.send(buffer);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "server_error" });
+    }
+  });
+
+  app.get("/api/developer/export/all", checkDeveloperAuth, async (req, res) => {
+    try {
+      const { rows: events } = await db.execute("SELECT id, name FROM events");
+      
+      const workbook = xlsx.utils.book_new();
+      
+      for (const event of events) {
+        const { rows: registrations } = await db.execute({
+          sql: `SELECT u.full_name as Name, u.email as Email, u.roll_number as "Roll Number", 
+                       u.phone as "Contact Number", u.department as Programme, r.status as Status, 
+                       r.team_members as "Team Members", r.created_at as "Registered On"
+                FROM registrations r
+                JOIN users u ON r.user_id = u.id
+                WHERE r.event_id = ?
+                ORDER BY r.created_at DESC`,
+          args: [(event as any).id]
+        });
+
+        const formattedData = registrations.map((r: any) => {
+          let teamMembersStr = "";
+          try {
+            if (r["Team Members"]) {
+              const team = JSON.parse(r["Team Members"]);
+              if (Array.isArray(team)) {
+                teamMembersStr = team.map((m: any) => `${m.name} (${m.reg_number})`).join(", ");
+              }
+            }
+          } catch(e) {}
+          
+          return {
+            ...r,
+            "Team Members": teamMembersStr,
+            "Registered On": new Date(r["Registered On"]).toLocaleString()
+          };
+        });
+        
+        // Add a placeholder row if no registrations
+        const sheetData = formattedData.length > 0 ? formattedData : [{ Name: "No registrations yet" }];
+
+        const worksheet = xlsx.utils.json_to_sheet(sheetData);
+        // Truncate event name for sheet name (max 31 chars)
+        let sheetName = (event as any).name.substring(0, 31).replace(/[:\\\\/?*\\[\\]]/g, "");
+        if (!sheetName) sheetName = "Event";
+        
+        // Ensure sheet names are unique
+        let finalSheetName = sheetName;
+        let counter = 1;
+        while (workbook.SheetNames.includes(finalSheetName)) {
+           finalSheetName = `${sheetName.substring(0, 27)}_${counter}`;
+           counter++;
+        }
+
+        xlsx.utils.book_append_sheet(workbook, worksheet, finalSheetName);
+      }
+      
+      const buffer = xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
+      
+      res.setHeader('Content-Disposition', 'attachment; filename="Blossoms_All_Registrations.xlsx"');
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      return res.send(buffer);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "server_error" });
+    }
+  });
+
   // Explicit static serving for media files and public directory
   const publicPath = path.join(process.cwd(), "public");
   app.use(express.static(publicPath));
@@ -964,6 +1170,15 @@ async function startServer() {
     res.sendFile(path.join(publicPath, "assets", "blossoms-bloom.mp4"));
   });
 
+
+
+// Ensure /api/* always returns JSON 404 if no route matched
+app.all("/api/*", (req, res) => {
+  res.status(404).json({ error: "NOT_FOUND", message: "API endpoint not found" });
+});
+
+if (!process.env.VERCEL) {
+  (async () => {
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
@@ -978,10 +1193,12 @@ async function startServer() {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
-
+  
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
+  
+  })();
 }
 
-startServer();
+export default app;
