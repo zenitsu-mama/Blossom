@@ -1163,12 +1163,6 @@ const db: any = new Proxy({}, {
   const publicPath = path.join(process.cwd(), "public");
   app.use(express.static(publicPath));
   app.use("/assets", express.static(path.join(publicPath, "assets")));
-  app.get("/blossoms-bloom.mp4", (req, res) => {
-    res.sendFile(path.join(publicPath, "blossoms-bloom.mp4"));
-  });
-  app.get("/assets/blossoms-bloom.mp4", (req, res) => {
-    res.sendFile(path.join(publicPath, "assets", "blossoms-bloom.mp4"));
-  });
 
 
 

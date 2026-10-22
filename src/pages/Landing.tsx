@@ -1,12 +1,54 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useIsMobile } from '../hooks/useIsMobile';
+// Import the video asset so Vite reliably hashes and bundles it
+import mobileHeroVideo from '../assets/blossoms-bloom.mp4';
 
-function FlowerBloomHero() {
+// Componentize the video to ensure clean unmounting
+function MobileVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [animationPhase, setAnimationPhase] = useState(0);
 
   useEffect(() => {
-    // Phase 0 (0-1.8s): Video blooms from bud to open flower
+    const video = videoRef.current;
+    if (!video) return;
+    
+    // Explicitly setting muted properties on the DOM node is often required by iOS/Safari
+    video.defaultMuted = true;
+    video.muted = true;
+    
+    // Explicitly call play in addition to autoPlay attribute
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(error => {
+        console.warn("Autoplay was prevented by browser:", error);
+      });
+    }
+  }, []);
+
+  return (
+    <video 
+      ref={videoRef}
+      src={mobileHeroVideo}
+      autoPlay 
+      muted 
+      playsInline
+      loop
+      preload="auto"
+      className="w-full h-full object-cover"
+      style={{ 
+        transform: 'translateZ(0)', 
+        backgroundColor: '#FDF8F5' // Lightweight static fallback while loading
+      }}
+    />
+  );
+}
+
+function FlowerBloomHero() {
+  const [animationPhase, setAnimationPhase] = useState(0);
+  const isMobile = useIsMobile(767); // Suggested breakpoint
+
+  useEffect(() => {
+    // Phase 0 (0-1.8s): Initial wait
     // Phase 1 (at 1.8s): "BLOSSOMS" text appears smoothly
     // Phase 2 (at 2.8s): "Login / Sign Up" button and supporting info appear
     const t1 = setTimeout(() => setAnimationPhase(1), 1800);
@@ -18,45 +60,11 @@ function FlowerBloomHero() {
     };
   }, []);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.muted = true;
-    video.defaultMuted = true;
-    video.playsInline = true;
-    video.loop = false;
-
-    const startPlay = () => {
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Autoplay fallback: retry muted
-          video.muted = true;
-          video.play().catch(() => {});
-        });
-      }
-    };
-
-    startPlay();
-  }, []);
-
   return (
     <div className="relative w-full min-h-screen flex flex-col items-center justify-between overflow-hidden bg-[#FDF8F5] text-[#000000]">
-      {/* Background/Video Layer */}
+      {/* Background/Video Layer - Rendered conditionally for viewport isolation */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden flex items-center justify-center">
-        <video 
-          ref={videoRef}
-          src="/blossoms-bloom.mp4"
-          autoPlay 
-          muted 
-          playsInline
-          preload="auto"
-          className="w-full h-full object-cover"
-          style={{ transform: 'translateZ(0)' }}
-        >
-          <source src="/blossoms-bloom.mp4" type="video/mp4" />
-        </video>
+        {isMobile && <MobileVideo />}
       </div>
 
       {/* Top Editorial Header */}
