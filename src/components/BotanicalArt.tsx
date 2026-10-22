@@ -257,7 +257,7 @@ export function SidebarLotusArt() {
         <radialGradient id="lotusSoftGrad" cx="30%" cy="70%" r="70%">
           <stop offset="0%" stopColor="#F9A492" stopOpacity="0.9" />
           <stop offset="50%" stopColor="#EE7767" stopOpacity="0.75" />
-          <stop offset="100%" stopColor="#FAF7F2" stopOpacity="0" />
+          <stop offset="100%" stopColor="#FDF0F4" stopOpacity="0" />
         </radialGradient>
       </defs>
       {/* Stem */}
@@ -385,7 +385,7 @@ export const CATEGORY_VISUALS: Record<string, CategoryVisualMeta> = {
     name: 'STAGE',
     number: '06',
     accentColor: '#F07A6E',
-    bgWash: 'bg-[#FDF8F5]',
+    bgWash: 'bg-[#FFF5F7]',
     textColor: 'text-[#1C1917]',
     borderColor: 'border-[#F07A6E]',
     artComponent: ({ className }) => <TheatreBotanicalArt className={className || "w-full h-full text-[#F07A6E]"} />,

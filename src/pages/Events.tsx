@@ -255,7 +255,7 @@ function SidebarLotusArt() {
         <radialGradient id="lotusSoftGrad" cx="30%" cy="70%" r="70%">
           <stop offset="0%" stopColor="#F9A492" stopOpacity="0.9" />
           <stop offset="50%" stopColor="#EE7767" stopOpacity="0.75" />
-          <stop offset="100%" stopColor="#FAF7F2" stopOpacity="0" />
+          <stop offset="100%" stopColor="#FDF0F4" stopOpacity="0" />
         </radialGradient>
       </defs>
       {/* Stem */}
@@ -425,11 +425,11 @@ export default function Events() {
     : [];
 
   return (
-    <div className="w-full h-full min-h-full bg-[#FAF7F2]">
+    <div className="w-full h-full min-h-full bg-[#FDF0F4]">
       {/* ========================================================================= */}
       {/* 1. MOBILE EXPERIENCE: EXPANDING BENTO COMPOSITION (lg:hidden)             */}
       {/* ========================================================================= */}
-      <div className="block lg:hidden w-full min-h-full px-4 sm:px-6 pt-5 pb-24 bg-[#FAF7F2] relative">
+      <div className="block lg:hidden w-full min-h-full px-4 sm:px-6 pt-5 pb-24 bg-[#FDF0F4] relative">
         <LayoutGroup id="mobile-bento-layout">
           {/* Editorial Header */}
           <motion.div
@@ -803,9 +803,9 @@ export default function Events() {
       {/* ========================================================================= */}
       {/* 2. DESKTOP EXPERIENCE: EDITORIAL SIDEBAR + BENTO GRID (hidden lg:flex)    */}
       {/* ========================================================================= */}
-      <div className="hidden lg:flex h-screen w-full bg-[#FAF7F2] overflow-hidden">
+      <div className="hidden lg:flex h-screen w-full bg-[#FDF0F4] overflow-hidden">
         {/* LEFT EDITORIAL SIDEBAR */}
-        <aside className="w-60 xl:w-68 h-full shrink-0 border-r border-black/10 bg-[#FAF7F2] p-8 flex flex-col justify-between relative select-none">
+        <aside className="w-60 xl:w-68 h-full shrink-0 border-r border-black/10 bg-[#FDF0F4] p-8 flex flex-col justify-between relative select-none">
           <div>
             {/* Festival Brand Header */}
             <Link to="/" className="block group">
@@ -1067,7 +1067,7 @@ export default function Events() {
                       </div>
 
                       {/* Title */}
-                      <h2 className="font-['Barlow_Condensed'] text-7xl xl:text-8xl font-black uppercase tracking-tight leading-none z-10 my-auto text-[#FDF8F5]">
+                      <h2 className="font-['Barlow_Condensed'] text-7xl xl:text-8xl font-black uppercase tracking-tight leading-none z-10 my-auto text-[#FFF5F7]">
                         {cat.name}
                       </h2>
 

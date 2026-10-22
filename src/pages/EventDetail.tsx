@@ -51,7 +51,7 @@ export default function EventDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-[80vh] flex flex-col items-center justify-center bg-[#FAF7F2] text-[#1a1a1a] p-8">
+      <div className="min-h-[80vh] flex flex-col items-center justify-center bg-[#FDF0F4] text-[#1a1a1a] p-8">
         <div className="w-9 h-9 border-2 border-[#1a1a1a]/20 border-t-[#F87A71] rounded-full animate-spin mb-4" />
         <p className="font-['Geist_Mono'] text-xs tracking-[0.25em] uppercase text-[#1a1a1a]/60">
           Loading Event...
@@ -62,7 +62,7 @@ export default function EventDetail() {
 
   if (error || !event) {
     return (
-      <div className="min-h-[80vh] flex flex-col items-center justify-center bg-[#FAF7F2] text-[#1a1a1a] p-8 text-center">
+      <div className="min-h-[80vh] flex flex-col items-center justify-center bg-[#FDF0F4] text-[#1a1a1a] p-8 text-center">
         <span className="font-['Barlow_Condensed'] text-5xl sm:text-6xl font-black text-[#1a1a1a] uppercase mb-3">
           Event Not Found
         </span>
@@ -84,12 +84,12 @@ export default function EventDetail() {
   const isArtCategory = event.category.toLowerCase() === 'art';
 
   return (
-    <div className="min-h-screen w-full bg-[#FAF7F2] text-[#1a1a1a] selection:bg-[#F87A71] selection:text-white flex flex-col lg:flex-row overflow-x-hidden">
+    <div className="min-h-screen w-full bg-[#FDF0F4] text-[#1a1a1a] selection:bg-[#F87A71] selection:text-white flex flex-col lg:flex-row overflow-x-hidden">
       
       {/* ========================================================================= */}
       {/* 1. DESKTOP EDITORIAL SIDEBAR (lg:flex only - matches Events page)         */}
       {/* ========================================================================= */}
-      <aside className="hidden lg:flex w-60 xl:w-68 h-screen shrink-0 sticky top-0 border-r border-black/10 bg-[#FAF7F2] p-8 flex-col justify-between select-none z-30">
+      <aside className="hidden lg:flex w-60 xl:w-68 h-screen shrink-0 sticky top-0 border-r border-black/10 bg-[#FDF0F4] p-8 flex-col justify-between select-none z-30">
         <div>
           {/* Festival Brand Header */}
           <Link to="/" className="block group">
@@ -360,7 +360,7 @@ export default function EventDetail() {
       {/* ========================================================================= */}
       {/* 3. MOBILE STICKY BOTTOM REGISTRATION CTA BAR (Pinned, thumb-friendly)     */}
       {/* ========================================================================= */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden p-4 bg-[#FAF7F2]/92 backdrop-blur-md border-t border-black/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden p-4 bg-[#FDF0F4]/92 backdrop-blur-md border-t border-black/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
         <div className="max-w-md mx-auto">
           <Link
             to={`/events/${event.id}/register`}

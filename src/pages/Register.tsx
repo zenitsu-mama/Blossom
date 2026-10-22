@@ -59,7 +59,7 @@ export default function Register() {
         </p>
         <Link
           to="/events"
-          className="inline-flex items-center gap-2 border border-[#242323] text-[#242323] px-8 py-3 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#242323] hover:text-[#FAF7F2] transition-colors"
+          className="inline-flex items-center gap-2 border border-[#242323] text-[#242323] px-8 py-3 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#242323] hover:text-[#FDF0F4] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Return to Events
         </Link>
@@ -71,7 +71,7 @@ export default function Register() {
   if (state === 'SUCCESS' && registrationResult) {
     return (
       <div className="w-full min-h-[70vh] flex items-center justify-center px-4 sm:px-6 md:px-12 py-8 md:py-12">
-        <div className="w-full max-w-2xl bg-[#FAF7F2] border border-[#242323]/25 rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-xs">
+        <div className="w-full max-w-2xl bg-[#FDF0F4] border border-[#242323]/25 rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-xs">
           {/* Top Stamp */}
           <div className="flex items-center justify-between border-b border-[#242323]/15 pb-3 mb-6">
             <div className="flex items-center gap-2 text-emerald-700">
@@ -157,7 +157,7 @@ export default function Register() {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-[#242323]/15">
             <Link
               to="/events"
-              className="text-center border border-[#242323]/30 rounded-full text-[#242323] px-6 py-2.5 text-xs font-bold uppercase tracking-[0.18em] hover:bg-[#242323] hover:text-[#FAF7F2] transition-colors font-['Inter']"
+              className="text-center border border-[#242323]/30 rounded-full text-[#242323] px-6 py-2.5 text-xs font-bold uppercase tracking-[0.18em] hover:bg-[#242323] hover:text-[#FDF0F4] transition-colors font-['Inter']"
             >
               Explore More Events
             </Link>
@@ -177,7 +177,7 @@ export default function Register() {
   if (state === 'ALREADY_REGISTERED') {
     return (
       <div className="w-full min-h-[70vh] flex items-center justify-center px-4 sm:px-6 py-8 md:py-12">
-        <div className="w-full max-w-xl bg-[#FAF7F2] border border-[#242323]/25 rounded-2xl p-6 sm:p-8 text-center shadow-xs">
+        <div className="w-full max-w-xl bg-[#FDF0F4] border border-[#242323]/25 rounded-2xl p-6 sm:p-8 text-center shadow-xs">
           <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 text-amber-800 mb-4">
             <AlertCircle className="w-5 h-5 stroke-[2]" />
           </div>
@@ -194,7 +194,7 @@ export default function Register() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to="/events"
-              className="w-full sm:w-auto border border-[#242323]/30 rounded-full text-[#242323] px-6 py-2.5 text-xs font-bold uppercase tracking-[0.18em] hover:bg-[#242323] hover:text-[#FAF7F2] transition-colors font-['Inter']"
+              className="w-full sm:w-auto border border-[#242323]/30 rounded-full text-[#242323] px-6 py-2.5 text-xs font-bold uppercase tracking-[0.18em] hover:bg-[#242323] hover:text-[#FDF0F4] transition-colors font-['Inter']"
             >
               Back to Events
             </Link>
@@ -232,7 +232,7 @@ export default function Register() {
             LEFT COLUMN (Desktop: Sticky Dossier / Mobile: Top Accordion)
             ======================================================== */}
         <div className="lg:col-span-5 flex flex-col gap-4 lg:sticky lg:top-20">
-          <div className="bg-[#FAF7F2] border border-[#242323]/25 rounded-2xl p-4 sm:p-5 lg:p-5 xl:p-6 relative shadow-xs">
+          <div className="bg-[#FDF0F4] border border-[#242323]/25 rounded-2xl p-4 sm:p-5 lg:p-5 xl:p-6 relative shadow-xs">
             <div className="flex items-center justify-between border-b border-[#242323]/15 pb-2.5 mb-3">
               <span className="text-[10px] font-bold tracking-[0.22em] text-[#c33a3a] uppercase font-['Inter']">
                 {event.category}
@@ -300,7 +300,7 @@ export default function Register() {
             RIGHT COLUMN: EDITORIAL REGISTRATION LEDGER FORM
             ======================================================== */}
         <div className="lg:col-span-7 -mt-2 lg:mt-0">
-          <div className="bg-[#FAF7F2] border border-[#242323]/25 rounded-2xl p-4 sm:p-5 lg:p-5 xl:p-6 relative shadow-xs">
+          <div className="bg-[#FDF0F4] border border-[#242323]/25 rounded-2xl p-4 sm:p-5 lg:p-5 xl:p-6 relative shadow-xs">
             <div className="border-b border-[#242323]/15 pb-2.5 mb-3.5 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl sm:text-3xl font-normal font-['Barlow_Condensed'] uppercase text-[#242323] tracking-wide leading-tight">
@@ -480,7 +480,7 @@ export default function Register() {
                             value={member.name}
                             onChange={(e) => handleTeamMemberChange(index, 'name', e.target.value)}
                             disabled={isSubmitting}
-                            className="bg-[#FAF7F2]/70 border border-stone-200 rounded-lg px-2.5 py-1.5 text-xs font-['Barlow_Condensed'] uppercase tracking-wider text-[#242323] focus:outline-none focus:border-[#242323]"
+                            className="bg-[#FDF0F4]/70 border border-stone-200 rounded-lg px-2.5 py-1.5 text-xs font-['Barlow_Condensed'] uppercase tracking-wider text-[#242323] focus:outline-none focus:border-[#242323]"
                           />
                           <input
                             type="text"
@@ -488,7 +488,7 @@ export default function Register() {
                             value={member.reg_number}
                             onChange={(e) => handleTeamMemberChange(index, 'reg_number', e.target.value)}
                             disabled={isSubmitting}
-                            className="bg-[#FAF7F2]/70 border border-stone-200 rounded-lg px-2.5 py-1.5 text-xs font-mono uppercase tracking-wider text-[#242323] focus:outline-none focus:border-[#242323]"
+                            className="bg-[#FDF0F4]/70 border border-stone-200 rounded-lg px-2.5 py-1.5 text-xs font-mono uppercase tracking-wider text-[#242323] focus:outline-none focus:border-[#242323]"
                           />
                         </div>
                         {formData.teamMembers.length > (Math.max(1, (event.min_team_size || 2) - 1)) && (

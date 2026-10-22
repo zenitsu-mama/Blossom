@@ -22,7 +22,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   }, [location]);
 
   if (isLanding) {
-    return <div className="bg-[#FDF8F5] min-h-screen text-[#242323] font-['Geist']">{children}</div>;
+    return <div className="bg-[#FFF5F7] min-h-screen text-[#242323] font-['Geist']">{children}</div>;
   }
 
   if (isDeveloper) {
@@ -30,9 +30,9 @@ function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-[#FAF7F2] text-[#1a1a1a] font-['Geist'] antialiased selection:bg-[#c33a3a] selection:text-white overflow-hidden">
+    <div className="h-screen flex flex-col bg-[#FDF0F4] text-[#1a1a1a] font-['Geist'] antialiased selection:bg-[#c33a3a] selection:text-white overflow-hidden">
       {/* Global Header (Hidden on Desktop on /events because /events provides its own dedicated editorial sidebar) */}
-      <header className={`shrink-0 h-[70px] md:h-[85px] flex items-center justify-between px-[4vw] border-b border-black/10 bg-[#FAF7F2] ${isEvents ? 'lg:hidden' : ''}`}>
+      <header className={`shrink-0 h-[70px] md:h-[85px] flex items-center justify-between px-[4vw] border-b border-black/10 bg-[#FDF0F4] ${isEvents ? 'lg:hidden' : ''}`}>
         <Link to="/" className="font-['Cormorant_Garamond'] font-semibold italic text-3xl text-[#1a1a1a]">
           Blossoms.
         </Link>
@@ -58,7 +58,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Full-screen Mobile Menu */}
       <div 
-        className={`fixed inset-0 bg-[#FAF7F2] z-[55] flex flex-col items-center justify-center transition-all duration-500 ease-in-out md:hidden ${
+        className={`fixed inset-0 bg-[#FDF0F4] z-[55] flex flex-col items-center justify-center transition-all duration-500 ease-in-out md:hidden ${
           menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
         }`}
       >

@@ -299,7 +299,7 @@ export default function ProgressiveSignup({
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Your full name"
-                className="w-full bg-[#FAF7F2]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-5 h-[54px] text-sm font-['Inter'] text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
+                className="w-full bg-[#FDF0F4]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-5 h-[54px] text-sm font-['Inter'] text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
               />
             </div>
           )}
@@ -324,7 +324,7 @@ export default function ProgressiveSignup({
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Your roll number"
-                className="w-full bg-[#FAF7F2]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-5 h-[54px] text-sm font-mono uppercase tracking-wider text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
+                className="w-full bg-[#FDF0F4]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-5 h-[54px] text-sm font-mono uppercase tracking-wider text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
               />
             </div>
           )}
@@ -349,7 +349,7 @@ export default function ProgressiveSignup({
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Your contact number"
-                className="w-full bg-[#FAF7F2]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-5 h-[54px] text-sm font-mono tracking-wider text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
+                className="w-full bg-[#FDF0F4]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-5 h-[54px] text-sm font-mono tracking-wider text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
               />
             </div>
           )}
@@ -374,7 +374,7 @@ export default function ProgressiveSignup({
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Your programme"
-                className="w-full bg-[#FAF7F2]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-5 h-[54px] text-sm font-['Inter'] text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
+                className="w-full bg-[#FDF0F4]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-5 h-[54px] text-sm font-['Inter'] text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
               />
             </div>
           )}
@@ -399,7 +399,7 @@ export default function ProgressiveSignup({
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="yourname@programme.christuniversity.in"
-                className="w-full bg-[#FAF7F2]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-5 h-[54px] text-sm font-['Inter'] text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
+                className="w-full bg-[#FDF0F4]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-5 h-[54px] text-sm font-['Inter'] text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
               />
             </div>
           )}
@@ -425,7 +425,7 @@ export default function ProgressiveSignup({
                   }}
                   onKeyDown={handleKeyDown}
                   placeholder="Enter your password"
-                  className="w-full bg-[#FAF7F2]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-5 pr-12 h-[54px] text-sm font-['Inter'] text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
+                  className="w-full bg-[#FDF0F4]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-5 pr-12 h-[54px] text-sm font-['Inter'] text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
                 />
                 <button
                   type="button"
@@ -447,7 +447,7 @@ export default function ProgressiveSignup({
               </h3>
 
               {/* Concise Summary Metadata */}
-              <div className="bg-[#FAF7F2]/60 border border-[#242323]/10 rounded-2xl p-4 sm:p-5 space-y-2.5 mb-6 text-xs font-['Inter']">
+              <div className="bg-[#FDF0F4]/60 border border-[#242323]/10 rounded-2xl p-4 sm:p-5 space-y-2.5 mb-6 text-xs font-['Inter']">
                 <div className="flex items-center justify-between border-b border-[#242323]/6 pb-2">
                   <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#737373]">
                     NAME
@@ -487,7 +487,7 @@ export default function ProgressiveSignup({
                 type="button"
                 disabled={isSubmitting}
                 onClick={handleFinalSubmit}
-                className="w-full bg-[#c33a3a] hover:bg-[#a82e2e] active:scale-[0.99] rounded-full text-white sm:text-[#FAF7F2] h-[52px] px-8 text-xs sm:text-sm font-bold uppercase tracking-[0.22em] transition-all disabled:opacity-50 font-['Inter'] cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                className="w-full bg-[#c33a3a] hover:bg-[#a82e2e] active:scale-[0.99] rounded-full text-white sm:text-[#FDF0F4] h-[52px] px-8 text-xs sm:text-sm font-bold uppercase tracking-[0.22em] transition-all disabled:opacity-50 font-['Inter'] cursor-pointer flex items-center justify-center gap-2 shadow-sm"
               >
                 <span>{isSubmitting ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT →'}</span>
               </button>

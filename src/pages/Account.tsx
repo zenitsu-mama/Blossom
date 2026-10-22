@@ -436,10 +436,10 @@ export default function Account() {
 
           {/* Right Column: Softly Curved Authentication Container */}
           <div className="lg:col-span-7 w-full max-w-[540px] mx-auto lg:ml-auto">
-            <div className="bg-[#FAF7F2]/90 sm:bg-white/80 backdrop-blur-sm border border-[#242323]/10 shadow-[0_20px_50px_rgba(0,0,0,0.03)] rounded-[28px] sm:rounded-[36px] px-6 sm:px-10 lg:px-12 py-7 sm:py-8 relative transition-all">
+            <div className="bg-[#FDF0F4]/90 sm:bg-white/80 backdrop-blur-sm border border-[#242323]/10 shadow-[0_20px_50px_rgba(0,0,0,0.03)] rounded-[28px] sm:rounded-[36px] px-6 sm:px-10 lg:px-12 py-7 sm:py-8 relative transition-all">
               
               {/* Rounded Segmented Toggle (Sign In / Create Account) */}
-              <div className="rounded-full border border-[#242323]/20 p-1 bg-[#FAF7F2]/70 flex items-center mb-7 sm:mb-9">
+              <div className="rounded-full border border-[#242323]/20 p-1 bg-[#FDF0F4]/70 flex items-center mb-7 sm:mb-9">
                 <button
                   type="button"
                   onClick={() => {
@@ -449,7 +449,7 @@ export default function Account() {
                   }}
                   className={`flex-1 py-2.5 sm:py-3 px-4 rounded-full text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] font-['Inter'] transition-all cursor-pointer text-center ${
                     authMode === 'login'
-                      ? 'bg-[#1C1A1A] text-[#FAF7F2] shadow-sm'
+                      ? 'bg-[#1C1A1A] text-[#FDF0F4] shadow-sm'
                       : 'text-[#242323]/70 hover:text-[#242323]'
                   }`}
                 >
@@ -464,7 +464,7 @@ export default function Account() {
                   }}
                   className={`flex-1 py-2.5 sm:py-3 px-4 rounded-full text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] font-['Inter'] transition-all cursor-pointer text-center ${
                     authMode === 'signup'
-                      ? 'bg-[#1C1A1A] text-[#FAF7F2] shadow-sm'
+                      ? 'bg-[#1C1A1A] text-[#FDF0F4] shadow-sm'
                       : 'text-[#242323]/70 hover:text-[#242323]'
                   }`}
                 >
@@ -542,7 +542,7 @@ export default function Account() {
                           placeholder="yourname@programme.christuniversity.in"
                           value={authEmail}
                           onChange={(e) => setAuthEmail(e.target.value)}
-                          className="w-full bg-[#FAF7F2]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-4.5 pr-11 h-[52px] text-sm font-['Inter'] text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
+                          className="w-full bg-[#FDF0F4]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-4.5 pr-11 h-[52px] text-sm font-['Inter'] text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
                         />
                         <UserIcon className="w-4 h-4 text-stone-400 absolute right-4 pointer-events-none" />
                       </div>
@@ -560,7 +560,7 @@ export default function Account() {
                           placeholder="Enter your password"
                           value={authPassword}
                           onChange={(e) => setAuthPassword(e.target.value)}
-                          className="w-full bg-[#FAF7F2]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-4.5 pr-11 h-[52px] text-sm font-['Inter'] text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
+                          className="w-full bg-[#FDF0F4]/60 hover:bg-white focus:bg-white border border-[#242323]/25 focus:border-[#242323] rounded-2xl px-4.5 pr-11 h-[52px] text-sm font-['Inter'] text-[#242323] placeholder:text-stone-400 focus:outline-none transition-all"
                         />
                         <button
                           type="button"
@@ -587,7 +587,7 @@ export default function Account() {
                       <button
                         type="submit"
                         disabled={authSubmitting}
-                        className="w-full bg-[#c33a3a] hover:bg-[#a82e2e] active:scale-[0.99] rounded-full text-white sm:text-[#FAF7F2] h-[52px] px-8 text-xs sm:text-sm font-bold uppercase tracking-[0.22em] transition-all disabled:opacity-50 font-['Inter'] cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                        className="w-full bg-[#c33a3a] hover:bg-[#a82e2e] active:scale-[0.99] rounded-full text-white sm:text-[#FDF0F4] h-[52px] px-8 text-xs sm:text-sm font-bold uppercase tracking-[0.22em] transition-all disabled:opacity-50 font-['Inter'] cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                       >
                         <span>
                           {authSubmitting ? 'AUTHENTICATING...' : 'SIGN IN →'}
@@ -626,7 +626,7 @@ export default function Account() {
             {/* Password Reset Modal (Curved) */}
             {showPasswordReset && (
               <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-[120] flex items-center justify-center p-4">
-                <div className="bg-[#FAF7F2] border border-[#242323]/15 rounded-[28px] p-6 sm:p-8 max-w-md w-full shadow-2xl relative">
+                <div className="bg-[#FDF0F4] border border-[#242323]/15 rounded-[28px] p-6 sm:p-8 max-w-md w-full shadow-2xl relative">
                   <div className="flex items-center justify-between border-b border-[#242323]/10 pb-3 mb-4">
                     <span className="text-[11px] font-semibold tracking-[0.2em] uppercase font-['Inter'] text-[#242323]">
                       RESET PASSWORD
@@ -731,7 +731,7 @@ export default function Account() {
         </p>
         <button
           onClick={() => currentUser && fetchAccountData(currentUser)}
-          className="inline-flex items-center gap-2 border border-[#242323] bg-[#FAF7F2] text-[#242323] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#242323] hover:text-[#FAF7F2] transition-colors font-['Inter']"
+          className="inline-flex items-center gap-2 border border-[#242323] bg-[#FDF0F4] text-[#242323] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#242323] hover:text-[#FDF0F4] transition-colors font-['Inter']"
         >
           <RefreshCw className="w-4 h-4" /> Try Again
         </button>
@@ -760,13 +760,13 @@ export default function Account() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#FAF7F2] text-[#242323]">
+    <div className="w-full min-h-screen bg-[#FDF0F4] text-[#242323]">
       {/* ========================================================
           EDIT PROFILE MODAL
           ======================================================== */}
       {isEditingProfile && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-[100] flex items-center justify-center p-4">
-          <div className="bg-[#FAF7F2] border border-[#242323]/25 rounded-2xl p-5 sm:p-6 max-w-md w-full relative shadow-xl">
+          <div className="bg-[#FDF0F4] border border-[#242323]/25 rounded-2xl p-5 sm:p-6 max-w-md w-full relative shadow-xl">
             <div className="flex items-center justify-between border-b border-[#242323]/15 pb-2.5 mb-4">
               <span className="text-[10px] font-bold tracking-[0.22em] uppercase font-['Inter'] text-[#242323]">
                 Edit Student Profile
@@ -935,7 +935,7 @@ export default function Account() {
           <div className="lg:col-span-5 flex flex-col gap-4 lg:sticky lg:top-20">
             
             {/* Identity Card */}
-            <div className="bg-[#FAF7F2] border border-[#242323]/25 rounded-2xl p-4 sm:p-5 lg:p-5 xl:p-6 relative shadow-xs">
+            <div className="bg-[#FDF0F4] border border-[#242323]/25 rounded-2xl p-4 sm:p-5 lg:p-5 xl:p-6 relative shadow-xs">
               <div className="flex items-center justify-between border-b border-[#242323]/15 pb-2.5 mb-3">
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-bold tracking-[0.22em] text-[#c33a3a] uppercase font-['Inter']">
@@ -1070,7 +1070,7 @@ export default function Account() {
             </div>
 
             {/* Editorial Fast Link to Explore */}
-            <div className="bg-[#FAF7F2] border border-[#242323]/25 rounded-2xl p-4 hidden lg:block shadow-xs">
+            <div className="bg-[#FDF0F4] border border-[#242323]/25 rounded-2xl p-4 hidden lg:block shadow-xs">
               <span className="text-[8.5px] font-bold tracking-[0.18em] text-stone-500 uppercase font-['Inter'] block mb-1">
                 Explore The Festival
               </span>
@@ -1079,7 +1079,7 @@ export default function Account() {
               </p>
               <Link
                 to="/events"
-                className="w-full bg-white border border-[#242323]/25 rounded-full py-2 px-3.5 text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#242323] hover:bg-[#242323] hover:text-[#FAF7F2] transition-colors flex items-center justify-center gap-1.5 font-['Inter']"
+                className="w-full bg-white border border-[#242323]/25 rounded-full py-2 px-3.5 text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#242323] hover:bg-[#242323] hover:text-[#FDF0F4] transition-colors flex items-center justify-center gap-1.5 font-['Inter']"
               >
                 Browse All 17 Events <ArrowRight className="w-3 h-3" />
               </Link>
@@ -1108,7 +1108,7 @@ export default function Account() {
 
             {/* Empty State: No Registrations Yet */}
             {registrations.length === 0 ? (
-              <div className="bg-[#FAF7F2] border border-[#242323]/25 rounded-2xl p-6 sm:p-10 text-center shadow-xs">
+              <div className="bg-[#FDF0F4] border border-[#242323]/25 rounded-2xl p-6 sm:p-10 text-center shadow-xs">
                 <div className="w-10 h-10 rounded-full bg-white border border-[#242323]/20 flex items-center justify-center mx-auto mb-3 text-[#242323]">
                   <Sparkles className="w-4 h-4 text-[#c33a3a]" />
                 </div>
@@ -1136,7 +1136,7 @@ export default function Account() {
                   return (
                     <div 
                       key={reg.id}
-                      className="bg-[#FAF7F2] border border-[#242323]/25 rounded-2xl overflow-hidden shadow-xs transition-all"
+                      className="bg-[#FDF0F4] border border-[#242323]/25 rounded-2xl overflow-hidden shadow-xs transition-all"
                     >
                       {/* Top Bar / Card Header */}
                       <div className="p-4 sm:p-5">
@@ -1210,7 +1210,7 @@ export default function Account() {
 
                       {/* Group Event: Team Members Accordion */}
                       {isGroup && isExpanded && (
-                        <div className="border-t border-[#242323]/15 bg-[#FAF7F2] p-4 sm:p-5">
+                        <div className="border-t border-[#242323]/15 bg-[#FDF0F4] p-4 sm:p-5">
                           <div className="flex items-center justify-between mb-3">
                             <span className="text-[9.5px] font-bold tracking-[0.18em] text-stone-500 uppercase font-['Inter']">
                               Registered Team Roster
@@ -1223,7 +1223,7 @@ export default function Account() {
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                             {/* Team Lead */}
                             <div className="bg-white border border-[#242323]/20 rounded-xl p-3 relative">
-                              <span className="absolute top-2 right-2 px-1.5 py-0.5 bg-[#FAF7F2] text-[8px] font-bold uppercase tracking-wider font-['Inter'] text-[#242323] rounded">
+                              <span className="absolute top-2 right-2 px-1.5 py-0.5 bg-[#FDF0F4] text-[8px] font-bold uppercase tracking-wider font-['Inter'] text-[#242323] rounded">
                                 Team Lead
                               </span>
                               <span className="text-[8.5px] font-bold tracking-[0.18em] text-stone-400 uppercase font-['Inter'] block mb-0.5">

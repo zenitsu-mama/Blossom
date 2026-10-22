@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #FDF8F5;
+  --color-paper: #FFF5F7;
   --color-ink: #111111;
   --color-botanical: #c33a3a;
   --color-accent-pink: #c33a3a;
@@ -16,7 +16,7 @@
 
 @layer base {
   body {
-    @apply text-ink font-body antialiased min-h-screen relative bg-[#FDF8F5];
+    @apply text-ink font-body antialiased min-h-screen relative bg-[#FDF0F4];
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-display tracking-wide uppercase text-ink;

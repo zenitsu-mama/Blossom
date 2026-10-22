@@ -37,7 +37,7 @@ function MobileVideo() {
       className="w-full h-full object-cover"
       style={{ 
         transform: 'translateZ(0)', 
-        backgroundColor: '#FDF8F5' // Lightweight static fallback while loading
+        backgroundColor: '#FFF5F7' // Lightweight static fallback while loading
       }}
     />
   );
@@ -61,7 +61,7 @@ function FlowerBloomHero() {
   }, []);
 
   return (
-    <div className="relative w-full min-h-screen flex flex-col items-center justify-between overflow-hidden bg-[#FDF8F5] text-[#000000]">
+    <div className="relative w-full min-h-screen flex flex-col items-center justify-between overflow-hidden bg-[#FFF5F7] text-[#000000]">
       {/* Background/Video Layer - Rendered conditionally for viewport isolation */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden flex items-center justify-center">
         {isMobile && <MobileVideo />}

@@ -185,7 +185,7 @@ export default function Developer() {
 
   if (!authenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2] p-4">
+      <div className="min-h-screen flex items-center justify-center bg-[#FDF0F4] p-4">
         <div className="bg-white border border-[#242323]/25 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-xs">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-['Cormorant_Garamond'] font-semibold italic text-[#242323] mb-2">
@@ -241,7 +241,7 @@ export default function Developer() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] text-[#242323] font-['Inter'] flex flex-col">
+    <div className="min-h-screen bg-[#FDF0F4] text-[#242323] font-['Inter'] flex flex-col">
       {/* Top Header */}
       <header className="bg-white border-b border-[#242323]/15 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
@@ -309,7 +309,7 @@ export default function Developer() {
             <div className="bg-white border border-[#242323]/20 rounded-2xl overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="bg-[#FAF7F2] border-b border-[#242323]/10">
+                  <thead className="bg-[#FDF0F4] border-b border-[#242323]/10">
                     <tr>
                       <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-stone-500">Participant</th>
                       <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-stone-500">Roll No. / Prog</th>
@@ -380,7 +380,7 @@ export default function Developer() {
                   <span className="text-[10px] font-bold uppercase tracking-widest text-stone-500 block mb-1">Total Events</span>
                   <span className="text-3xl font-['Barlow_Condensed']">{events.length}</span>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-[#FAF7F2] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-[#FDF0F4] flex items-center justify-center">
                   <Building2 className="w-5 h-5 text-[#242323]" />
                 </div>
               </div>
@@ -389,7 +389,7 @@ export default function Developer() {
                   <span className="text-[10px] font-bold uppercase tracking-widest text-stone-500 block mb-1">Total Registrations</span>
                   <span className="text-3xl font-['Barlow_Condensed']">{totalRegistrations}</span>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-[#FAF7F2] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-[#FDF0F4] flex items-center justify-center">
                   <User className="w-5 h-5 text-[#242323]" />
                 </div>
               </div>
@@ -408,7 +408,7 @@ export default function Developer() {
                       className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer ${
                         categoryFilter === cat 
                           ? 'bg-[#242323] text-white' 
-                          : 'bg-[#FAF7F2] text-stone-600 hover:bg-[#e8e2da]'
+                          : 'bg-[#FDF0F4] text-stone-600 hover:bg-[#e8e2da]'
                       }`}
                     >
                       {cat}
@@ -419,7 +419,7 @@ export default function Developer() {
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="bg-[#FAF7F2] border-b border-[#242323]/10">
+                  <thead className="bg-[#FDF0F4] border-b border-[#242323]/10">
                     <tr>
                       <th className="px-4 sm:px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-stone-500">Event Name</th>
                       <th className="px-4 sm:px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-stone-500">Category</th>
@@ -442,7 +442,7 @@ export default function Developer() {
                           <div className="text-[10px] text-stone-500 font-mono mt-0.5">{event.type}</div>
                         </td>
                         <td className="px-4 sm:px-6 py-4">
-                          <span className="inline-block px-2 py-0.5 bg-[#FAF7F2] rounded text-[10px] font-bold uppercase tracking-widest text-stone-600">
+                          <span className="inline-block px-2 py-0.5 bg-[#FDF0F4] rounded text-[10px] font-bold uppercase tracking-widest text-stone-600">
                             {event.category}
                           </span>
                         </td>
@@ -452,7 +452,7 @@ export default function Developer() {
                         <td className="px-4 sm:px-6 py-4 text-right">
                           <button
                             onClick={() => loadEventRegistrations(event.id)}
-                            className="inline-flex items-center justify-center bg-white border border-[#242323]/20 hover:border-[#242323] hover:bg-[#FAF7F2] px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest text-[#242323] transition-all cursor-pointer shadow-xs"
+                            className="inline-flex items-center justify-center bg-white border border-[#242323]/20 hover:border-[#242323] hover:bg-[#FDF0F4] px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest text-[#242323] transition-all cursor-pointer shadow-xs"
                           >
                             View
                           </button>
